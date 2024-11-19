@@ -7,10 +7,10 @@ from app.database import init_db
 app = create_app()
 
 # Initialize the database
-#init_db()
+init_db()
 
 # Start background tasks
-#socketio.start_background_task(target=background_co2_read)
+socketio.start_background_task(target=background_co2_read)
 
 if __name__ == "__main__":
     print("Starting Flask application...")

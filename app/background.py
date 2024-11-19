@@ -12,9 +12,12 @@ except Exception as e:
     print(f"Error initializing serial port: {e}")
 
 def background_co2_read():
+    error_logged = False  # Track if the error has already been logged
     while True:
         if ser is None:
-            print("Serial port is unavailable. Emitting placeholder value.")
+            if not error_logged:
+                print("Serial port is unavailable. Emitting placeholder value.")
+                error_logged = True  # Only log the error once
             socketio.emit('update_data', {'co2': '?'}, to='/')
         else:
             try:

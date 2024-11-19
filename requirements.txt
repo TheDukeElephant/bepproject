@@ -13,3 +13,13 @@ When Do You Need setup.py?
 
 On the first run to initialize the database and create the default user.
 If you manually delete users.db and need to recreate it.
+
+Steps for Restarting the Raspberry Pi
+After a reboot, you only need to:
+
+Start the application:
+
+bash
+Copy code
+python run.py
+Your database (users.db) will remain intact with all existing users.

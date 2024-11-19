@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from flask_login import UserMixin, login_user, logout_user, current_user
 from .database import authenticate_user
+from . import login_manager  # Import the login_manager instance
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -9,7 +10,9 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)  # Replace with database query logic if needed
+    user = User()
+    user.id = user_id
+    return user
 
 @auth_blueprint.route('/login', methods=['GET', 'POST'])
 def login():

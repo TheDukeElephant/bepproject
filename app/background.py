@@ -1,21 +1,14 @@
 import serial
 import time
-import platform
 from . import socketio
 
-# Determine the appropriate serial port
-if platform.system() == "Windows":
-    SERIAL_PORT = "COM1"  # Replace with the actual COM port if you have a serial device connected
-else:
-    SERIAL_PORT = "/dev/serial0"
-
 try:
-    ser = serial.Serial(SERIAL_PORT, baudrate=9600, timeout=1)
+    ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
     time.sleep(1)
     ser.write(b'K 2\r\n')
     time.sleep(0.1)
-except serial.SerialException as e:
-    ser = None
+except Exception as e:
+    ser = None  # Set ser to None if the serial port is unavailable
     print(f"Error initializing serial port: {e}")
 
 def background_co2_read():
@@ -37,4 +30,3 @@ def background_co2_read():
                 print(f"Error reading from serial port: {e}")
                 socketio.emit('update_data', {'co2': '?'}, to='/')
         time.sleep(1)
-

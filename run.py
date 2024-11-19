@@ -14,6 +14,7 @@ socketio.start_background_task(target=background_co2_read)
 
 if __name__ == "__main__":
     print("Starting Flask application...")
-    #socketio.run(app, host="172.20.10.11", port=5000)
-    socketio.run(app, host="0.0.0.0", port=5000)
-    #app.run(host="0.0.0.0", port=5000)
+    try:
+        socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+    except Exception as e:
+        print(f"Error running Flask-SocketIO: {e}")

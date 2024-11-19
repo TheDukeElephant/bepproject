@@ -16,4 +16,4 @@ if __name__ == "__main__":
     print("Starting Flask application...")
     #socketio.run(app, host="172.20.10.11", port=5000)
     #socketio.run(app, host="localhost", port=5000)
-    app.run(app, host="localhost", port=5000)
+    app.run(host="localhost", port=5000)

@@ -1,5 +1,7 @@
 import time
 import serial
+from app.serial_port import ser
+
 
 from . import socketio
 

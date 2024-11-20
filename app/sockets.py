@@ -1,4 +1,4 @@
-from flask_socketio import emit, disconnect
+from flask_socketio import disconnect
 from flask_login import current_user
 from . import socketio
 

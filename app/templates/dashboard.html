@@ -3,22 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CO₂ Sensor Dashboard</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/dashboard.js') }}" defer></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <h1>CO₂ Sensor Dashboard</h1>
+    <h1>CO₂ Sensor Dashboard</h1>
+
+    <div class="sensor-data">
         <p>CO₂ Level: <span id="co2">Loading...</span></p>
-        
-        <!-- Canvas for Chart.js Graph -->
-        <canvas id="co2Chart" width="400" height="200"></canvas>
-        <!-- Button to go to the Setup page -->
-        <a href="{{ url_for('setup') }}"><button>Go to Setup</button></a>
-        <a href="{{ url_for('auth.logout') }}"><button class="logout-button">Logout</button></a>
+        <p>Temperature: <span id="temperature">Loading...</span></p>
+        <p>Humidity: <span id="humidity">Loading...</span></p>
     </div>
+
+    <div class="graphs">
+        <!-- CO₂ Graph -->
+        <div class="graph">
+            <h2>CO₂ Levels</h2>
+            <canvas id="co2Chart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Temperature Graph -->
+        <div class="graph">
+            <h2>Temperature</h2>
+            <canvas id="tempChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Humidity Graph -->
+        <div class="graph">
+            <h2>Humidity</h2>
+            <canvas id="humidityChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <a href="{{ url_for('setup') }}"><button>Go to Setup</button></a>
 </body>
 </html>

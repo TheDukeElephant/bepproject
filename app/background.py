@@ -9,10 +9,6 @@ import Adafruit_DHT  # Example for temperature and humidity sensor (DHT22)
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  # GPIO pin for the DHT sensor
 
-ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
-time.sleep(1)
-ser.write(b'K 2\r\n')
-time.sleep(0.1)
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor
@@ -27,7 +23,7 @@ def background_sensor_read():
             co2_response = co2_response.strip()
             if co2_response.startswith("Z") and len(co2_response) > 1:
                 co2_value = int(co2_response[1:].strip())
-                print(f"CO ^b^b Concentration: {co2_value} ppm")
+                print(f"CO2 Concentration: {co2_value} ppm")
                 socketio.emit('update_data', {'co2': co2_value}, broadcast=True)
             else:
                 print(f"Unexpected response from sensor: {co2_response}")
@@ -44,14 +40,14 @@ def background_sensor_read():
                 'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
             }, broadcast=True)
 
-        except Exception as e:
+"""         except Exception as e:
             print(f"Error reading sensors: {e}")
             # Emit placeholder data in case of error
             socketio.emit('update_dashboard', {
                 'co2': '?',
                 'temperature': 'N/A',
                 'humidity': 'N/A'
-            }, broadcast=True)
+            }, broadcast=True) """
 
         # Wait 1 second before the next reading
         socketio.sleep(1)

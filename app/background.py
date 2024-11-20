@@ -2,17 +2,17 @@ import serial
 import time
 from . import socketio
 
-try:
-    ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
-    time.sleep(1)
-    ser.write(b'K 2\r\n')
-    time.sleep(0.1)
-except Exception as e:
-    ser = None  # Set ser to None if the serial port is unavailable
-    print(f"Error initializing serial port: {e}")
-
 def background_co2_read():
     error_logged = False  # Track if the error has already been logged
+    ser = None
+    try:
+        ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
+        time.sleep(1)
+        ser.write(b'K 2\r\n')
+        time.sleep(0.1)
+    except Exception as e:
+        print(f"Error initializing serial port: {e}")
+
     while True:
         if ser is None:
             if not error_logged:

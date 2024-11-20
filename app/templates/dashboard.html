@@ -16,7 +16,8 @@
         
         <!-- Canvas for Chart.js Graph -->
         <canvas id="co2Chart" width="400" height="200"></canvas>
-
+        <!-- Button to go to the Setup page -->
+        <a href="{{ url_for('setup') }}"><button>Go to Setup</button></a>
         <a href="{{ url_for('auth.logout') }}"><button class="logout-button">Logout</button></a>
     </div>
 </body>

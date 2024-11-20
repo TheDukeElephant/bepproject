@@ -10,34 +10,37 @@
     <script src="{{ url_for('static', filename='scripts/dashboard.js') }}" defer></script>
 </head>
 <body>
-    <h1>CO₂ Sensor Dashboard</h1>
+    <div class="dashboard-container">
+        <h1>CO₂ Sensor Dashboard</h1>
+        
+        <div class="grid-container">
+            <!-- Sensor Data -->
+            <div class="sensor-data">
+                <p>CO₂ Level: <span id="co2">Loading...</span></p>
+                <p>Temperature: <span id="temperature">Loading...</span></p>
+                <p>Humidity: <span id="humidity">Loading...</span></p>
+            </div>
 
-    <div class="sensor-data">
-        <p>CO₂ Level: <span id="co2">Loading...</span></p>
-        <p>Temperature: <span id="temperature">Loading...</span></p>
-        <p>Humidity: <span id="humidity">Loading...</span></p>
+            <!-- CO₂ Graph -->
+            <div class="graph">
+                <h2>CO₂ Levels</h2>
+                <canvas id="co2Chart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Temperature Graph -->
+            <div class="graph">
+                <h2>Temperature</h2>
+                <canvas id="tempChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Humidity Graph -->
+            <div class="graph">
+                <h2>Humidity</h2>
+                <canvas id="humidityChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <a href="{{ url_for('main.setup') }}"><button>Setup</button></a>
     </div>
-
-    <div class="graphs">
-        <!-- CO₂ Graph -->
-        <div class="graph">
-            <h2>CO₂ Levels</h2>
-            <canvas id="co2Chart" width="400" height="200"></canvas>
-        </div>
-
-        <!-- Temperature Graph -->
-        <div class="graph">
-            <h2>Temperature</h2>
-            <canvas id="tempChart" width="400" height="200"></canvas>
-        </div>
-
-        <!-- Humidity Graph -->
-        <div class="graph">
-            <h2>Humidity</h2>
-            <canvas id="humidityChart" width="400" height="200"></canvas>
-        </div>
-    </div>
-
-    <a href="{{ url_for('main.setup') }}"><button>Go to Setup</button></a>
 </body>
 </html>

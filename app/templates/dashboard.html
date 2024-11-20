@@ -39,7 +39,7 @@
                 <canvas id="humidityChart" width="400" height="200"></canvas>
             </div>
         </div>
-
+        <button class="logout-button" onclick="location.href='{{ url_for('main.logout') }}'">Logout</button>
         <a href="{{ url_for('main.setup') }}"><button>Setup</button></a>
     </div>
 </body>

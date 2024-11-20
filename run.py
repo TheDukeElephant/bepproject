@@ -1,5 +1,5 @@
 from app import create_app, socketio
-from app.background import background_co2_read
+from app.background import background_sensor_read
 from app.database import init_db
 
 # Initialize the app

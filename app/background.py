@@ -2,7 +2,6 @@ import time
 from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
-import serial
 import Adafruit_DHT  # Example for temperature and humidity sensor (DHT22)
 
 # Initialize DHT Sensor
@@ -34,20 +33,22 @@ def background_sensor_read():
                 humidity, temperature = "N/A", "N/A"
 
             # Emit the data to connected clients
+            print(f"Emitting data: CO2: {co2_value}, Temp: {temperature}, Humidity: {humidity}")
             socketio.emit('update_dashboard', {
-                'co2': co2_value,
-                'temperature': round(temperature, 2) if temperature != "N/A" else "N/A",
-                'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
+               'co2': co2_value,
+               'temperature': round(temperature, 2) if temperature != "N/A" else "N/A",
+               'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
             }, broadcast=True)
 
-"""         except Exception as e:
+
+        except Exception as e:
             print(f"Error reading sensors: {e}")
             # Emit placeholder data in case of error
             socketio.emit('update_dashboard', {
                 'co2': '?',
                 'temperature': 'N/A',
                 'humidity': 'N/A'
-            }, broadcast=True) """
+            }, broadcast=True)
 
         # Wait 1 second before the next reading
         socketio.sleep(1)

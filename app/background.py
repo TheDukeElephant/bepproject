@@ -28,9 +28,12 @@ def background_sensor_read():
                 print(f"Unexpected response from sensor: {co2_response}")
 
             # Temperature and Humidity Reading
+            print("trying temp en hum now...")
             humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
+            print("trying done")
             if humidity is None or temperature is None:
                 humidity, temperature = "N/A", "N/A"
+                print("temp and hum are none")
 
             # Emit the data to connected clients
             print(f"Emitting data: CO2: {co2_value}, Temp: {temperature}, Humidity: {humidity}")

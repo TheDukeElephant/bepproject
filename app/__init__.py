@@ -11,9 +11,14 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = "super_secret_key"  # Replace with a secure key
 
-    # Initialize extensions
+    # Initialize Socketio extension
     socketio.init_app(app)
+    
+    #initialize Flask extensions
     login_manager.init_app(app)
+    
+    #initialize unauthenticated users to login pages
+    login_manager.login_view = 'auth.login'
 
     # Register blueprints
     from .routes import main_blueprint

@@ -42,9 +42,11 @@ def background_sensor_read():
                'temperature': round(temperature, 2) if temperature != "N/A" else "N/A",
                'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
             }, broadcast=True)
+            print("emit send")
 
 
         except Exception as e:
+            print("except has started, whatch out")
             print(f"Error reading sensors: {e}")
             # Emit placeholder data in case of error
             socketio.emit('update_dashboard', {

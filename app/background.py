@@ -3,7 +3,7 @@ import time
 from . import socketio
 
 def background_co2_read():
-    error_logged = False  # Track if the error has already been logged
+    error_logged = False
     ser = None
     try:
         ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
@@ -17,12 +17,13 @@ def background_co2_read():
         if ser is None:
             if not error_logged:
                 print("Serial port is unavailable. Emitting placeholder value.")
-                error_logged = True  # Only log the error once
+                error_logged = True
+            socketio.sleep(1)  # Replace `time.sleep()` with `socketio.sleep()`
             socketio.emit('update_data', {'co2': '?'}, to='/')
         else:
             try:
                 ser.write(b'Z\r\n')
-                time.sleep(0.1)
+                socketio.sleep(0.1)
                 response = ser.read_until().decode('utf-8').strip()
                 if response.startswith('Z') and len(response) > 1:
                     co2_value = int(response[1:])
@@ -32,4 +33,4 @@ def background_co2_read():
             except Exception as e:
                 print(f"Error reading from serial port: {e}")
                 socketio.emit('update_data', {'co2': '?'}, to='/')
-        time.sleep(1)
+            socketio.sleep(1)

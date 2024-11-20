@@ -2,11 +2,17 @@ import time
 from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
+import serial
 import Adafruit_DHT  # Example for temperature and humidity sensor (DHT22)
 
 # Initialize DHT Sensor
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  # GPIO pin for the DHT sensor
+
+ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
+time.sleep(1)
+ser.write(b'K 2\r\n')
+time.sleep(0.1)
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor
@@ -14,12 +20,17 @@ def background_sensor_read():
         try:
             # CO₂ Sensor Reading
             ser.write(b'Z\r\n')
-            socketio.sleep(0.1)  # Non-blocking sleep
-            response = ser.read_until().decode('utf-8').strip()
-            if response.startswith('Z') and len(response) > 1:
-                co2_value = int(response[1:])
+            time.sleep(0.1)
+            co2_response = ""
+            while ser.in_waiting > 0:
+                co2_response += ser.read().decode("utf-8")
+            co2_response = co2_response.strip()
+            if co2_response.startswith("Z") and len(co2_response) > 1:
+                co2_value = int(co2_response[1:].strip())
+                print(f"CO ^b^b Concentration: {co2_value} ppm")
+                socketio.emit('update_data', {'co2': co2_value}, broadcast=True)
             else:
-                co2_value = "?"
+                print(f"Unexpected response from sensor: {co2_response}")
 
             # Temperature and Humidity Reading
             humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)

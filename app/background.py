@@ -1,5 +1,6 @@
-import serial
 import time
+import serial
+
 from . import socketio
 
 def background_co2_read():

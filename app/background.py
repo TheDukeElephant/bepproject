@@ -30,6 +30,8 @@ def background_sensor_read():
             # Temperature and Humidity Reading
             print("trying temp en hum now...")
             #humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
+            humidity = 40
+            temperature = 20
             print("trying done")
             if humidity is None or temperature is None:
                 humidity, temperature = "N/A", "N/A"

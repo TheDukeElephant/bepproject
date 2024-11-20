@@ -29,6 +29,8 @@ def background_sensor_read():
 
             # Temperature and Humidity Reading
             print("trying temp en hum now...")
+            
+            #this needs to change if the temp and humidity sensors are connected!!!
             #humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
             humidity = 40
             temperature = 20

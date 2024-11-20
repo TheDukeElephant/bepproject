@@ -56,7 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     
         const now = new Date().toLocaleTimeString();
-
+        // Update CO2 value
+        document.getElementById('co2').textContent = `${co2} ppm`;
         // Update CO₂ chart
         co2Chart.data.labels.push(now);
         co2Chart.data.datasets[0].data.push(co2);
@@ -66,6 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         co2Chart.update();
 
+        // Update CO2 value
+        document.getElementById('co2').textContent = `${co2} ppm`;
         // Update Temperature chart
         tempChart.data.labels.push(now);
         tempChart.data.datasets[0].data.push(temperature);
@@ -75,6 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         tempChart.update();
 
+        // Update CO2 value
+        document.getElementById('co2').textContent = `${co2} ppm`;
         // Update Humidity chart
         humidityChart.data.labels.push(now);
         humidityChart.data.datasets[0].data.push(humidity);

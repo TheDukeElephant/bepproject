@@ -13,7 +13,7 @@ if __name__ == "__main__":
     
     print("Starting background tasks...")
     # Start background tasks
-    socketio.start_background_task(target=background_co2_read)
+    socketio.start_background_task(target=background_sensor_read)
     print("background tasks started")
     print("Starting Flask application...")
     try:

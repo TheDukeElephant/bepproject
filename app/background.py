@@ -21,7 +21,7 @@ def background_sensor_read():
                 co2_response += ser.read().decode("utf-8")
             co2_response = co2_response.strip()
             if co2_response.startswith("Z") and len(co2_response) > 1:
-                co2_value = int(co2_response[1:].strip())
+                co2_value = int(co2_response[1:].strip())*10
                 print(f"CO2 Concentration: {co2_value} ppm")
                 socketio.emit('update_data', {'co2': co2_value}, broadcast=True)
             else:

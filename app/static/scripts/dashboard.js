@@ -16,6 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
         options: { responsive: true }
     });
 
+    // Set up chart data for O₂
+    const o2Chart = new Chart(document.getElementById('o2Chart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'O₂ (ppm)',
+                data: [],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            }]
+        },
+        options: { responsive: true }
+    });
+
     // Set up chart data for Temperature
     const tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), {
         type: 'line',

@@ -43,6 +43,7 @@ def background_sensor_read():
             print(f"Emitting data: CO2: {co2_value}, Temp: {temperature}, Humidity: {humidity}")
             socketio.emit('update_dashboard', {
                'co2': co2_value,
+               'o2': co2_value,
                'temperature': round(temperature, 2) if temperature != "N/A" else "N/A",
                'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
             }, broadcast=True)
@@ -55,6 +56,7 @@ def background_sensor_read():
             # Emit placeholder data in case of error
             socketio.emit('update_dashboard', {
                 'co2': '?',
+                'o2': '?',
                 'temperature': 'N/A',
                 'humidity': 'N/A'
             }, broadcast=True)

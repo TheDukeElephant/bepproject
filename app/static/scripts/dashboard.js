@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     
         const now = new Date().toLocaleTimeString();
-        // Update CO2 value
+        
         // Update CO2 value
         document.getElementById('co2').textContent = `${co2} ppm`;
 
@@ -73,11 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
         // Compute the maximum value of the last 10 data points
         let lastTenValues = co2Chart.data.datasets[0].data; // Array of current data points
         let maxLastTen = Math.max(...lastTenValues); // Find max value in the last 10 points
-        let maxYValue = maxLastTen + 100; // Add buffer of 100
+
+        // Ensure y-axis minimum is 1000 and increment in steps of 100
+        let maxYValue = Math.max(1000, Math.ceil((maxLastTen + 100) / 100) * 100); // Round up to the nearest 100
 
         // Dynamically update the y-axis range
         co2Chart.options.scales.y = {
             beginAtZero: true,
+            min: 0, // Start y-axis at 0 for clarity
             max: maxYValue
         };
 

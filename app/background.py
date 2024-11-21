@@ -4,6 +4,7 @@ from app.serial_port import initialize_serial
 from . import socketio
 import adafruit_dht
 import board  # Required for CircuitPython
+from collections import deque
 
 # Initialize DHT Sensor
 try:
@@ -17,6 +18,9 @@ FALLBACK_CO2 = 400  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 21  # Example fallback O2 level in %
 FALLBACK_TEMPERATURE = 22.0  # Example fallback temperature in °C
 FALLBACK_HUMIDITY = 50.0  # Example fallback humidity in %
+
+# Buffer to store recent data for reconnections
+data_buffer = deque(maxlen=10)  # Store up to the last 10 updates
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor
@@ -58,23 +62,39 @@ def background_sensor_read():
                     dht_device.exit()
                     dht_device = None  # Disable further readings if the sensor fails
 
-            # Emit the data to connected clients
-            socketio.emit('update_dashboard', {
+            # Add a timestamp for the reading
+            sensor_data = {
+                'timestamp': int(time.time()),
                 'co2': co2_value,
                 'o2': o2_value,
                 'temperature': round(temperature, 2),
                 'humidity': round(humidity, 2)
-            }, to=None)
+            }
+
+            # Store data in buffer
+            data_buffer.append(sensor_data)
+
+            # Emit the data to connected clients
+            socketio.emit('update_dashboard', sensor_data, to=None)
 
         except Exception as e:
-            #print(f"Error reading sensors: {e}")
+            print(f"Error reading sensors: {e}")
             # Emit fallback data in case of error
-            socketio.emit('update_dashboard', {
+            fallback_data = {
+                'timestamp': int(time.time()),
                 'co2': FALLBACK_CO2,
                 'o2': FALLBACK_O2,
                 'temperature': FALLBACK_TEMPERATURE,
                 'humidity': FALLBACK_HUMIDITY
-            }, to=None)
+            }
+            socketio.emit('update_dashboard', fallback_data, to=None)
 
         # Wait 1 second before the next reading
         socketio.sleep(1)
+
+
+@socketio.on('request_data')
+def send_buffered_data():
+    """Send buffered data to the client upon request."""
+    for data in data_buffer:
+        emit('update_dashboard', data)

@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     
         const now = new Date().toLocaleTimeString();
-        
+
         // Update CO2 value
         document.getElementById('co2').textContent = `${co2} ppm`;
 
@@ -86,6 +86,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update the chart
         co2Chart.update();
+
+
+
+        
+        // Update O2 value
+        document.getElementById('o2').textContent = `${co2} ppm`;
+
+        // Update O2 chart
+        o2Chart.data.labels.push(now);
+        o2Chart.data.datasets[0].data.push(co2);
+
+        // Remove old data if more than 10 points
+        if (o2Chart.data.labels.length > 10) {
+            o2Chart.data.labels.shift();
+            o2Chart.data.datasets[0].data.shift();
+        }
+
+        // Compute the maximum value of the last 10 data points
+        let lastTenValues = o2Chart.data.datasets[0].data; // Array of current data points
+        let maxLastTen = Math.max(...lastTenValues); // Find max value in the last 10 points
+
+        // Ensure y-axis minimum is 1000 and increment in steps of 100
+        let maxYValue = Math.max(1000, Math.ceil((maxLastTen + 100) / 100) * 100); // Round up to the nearest 100
+
+        // Dynamically update the y-axis range
+        o2Chart.options.scales.y = {
+            beginAtZero: true,
+            min: 0, // Start y-axis at 0 for clarity
+            max: maxYValue
+        };
+
+        // Update the chart
+        o2Chart.update();
 
 
 

@@ -47,7 +47,15 @@ def background_sensor_read():
                     else:
                         print(f"Unexpected response from sensor: {co2_response}")
                 except Exception as e:
-                    print(f"Error reading CO₂ sensor: {e}")
+                    #print(f"Error reading CO₂ sensor: {e}")
+                    fallback_data = {
+                        'timestamp': int(time.time()),
+                        'co2': FALLBACK_CO2,
+                        'o2': FALLBACK_O2,
+                        'temperature': FALLBACK_TEMPERATURE,
+                        'humidity': FALLBACK_HUMIDITY
+                    }
+                    socketio.emit('update_dashboard', fallback_data, to=None)
             
             # Temperature and Humidity Reading
             temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY

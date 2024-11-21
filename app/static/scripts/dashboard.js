@@ -57,15 +57,31 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const now = new Date().toLocaleTimeString();
         // Update CO2 value
+        // Update CO2 value
         document.getElementById('co2').textContent = `${co2} ppm`;
-        // Update CO₂ chart
+
+        // Check if the y-axis needs to adjust
+        let maxYValue = Math.max(1000, co2 + 100); // Add some buffer (e.g., 100)
+
+        // Update CO2 chart
         co2Chart.data.labels.push(now);
         co2Chart.data.datasets[0].data.push(co2);
+
+        // Remove old data if more than 10 points
         if (co2Chart.data.labels.length > 10) {
             co2Chart.data.labels.shift();
             co2Chart.data.datasets[0].data.shift();
         }
+
+        // Dynamically update the y-axis range
+        co2Chart.options.scales.y = {
+            beginAtZero: true,
+            max: maxYValue
+        };
+
+        // Update the chart
         co2Chart.update();
+
 
         // Update CO2 value
         document.getElementById('co2').textContent = `${co2} ppm`;

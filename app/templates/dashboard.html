@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <h1>CO₂ Sensor Dashboard</h1>
+        <h1>Sensor Dashboard</h1>
         
         <div class="grid-container">
             <!-- Sensor Data -->
@@ -23,19 +23,22 @@
 
             <!-- CO₂ Graph -->
             <div class="graph">
-                <h2>CO₂ Levels</h2>
+                <h2>CO₂ Level</h2>
+                <p>CO₂ Level: <span id="co2">Loading...</span></p>
                 <canvas id="co2Chart" width="400" height="200"></canvas>
             </div>
 
             <!-- Temperature Graph -->
             <div class="graph">
                 <h2>Temperature</h2>
+                <p>Temperature: <span id="temperature">Loading...</span></p>
                 <canvas id="tempChart" width="400" height="200"></canvas>
             </div>
 
             <!-- Humidity Graph -->
             <div class="graph">
                 <h2>Humidity</h2>
+                <p>Humidity: <span id="humidity">Loading...</span></p>
                 <canvas id="humidityChart" width="400" height="200"></canvas>
             </div>
         </div>

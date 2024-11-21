@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Listen for dashboard updates
     socket.on('update_dashboard', (data) => {
         console.log('Received data:', data);
-        const { co2, temperature, humidity } = data;
+        const { co2, o2, temperature, humidity } = data;
         if (typeof co2 !== 'number' || typeof temperature !== 'number' || typeof humidity !== 'number') {
             console.error('Invalid data types:', data);
             return;

@@ -47,7 +47,7 @@ def background_sensor_read():
                     else:
                         print(f"Unexpected response from sensor: {co2_response}")
                 except Exception as e:
-                    #print(f"Error reading CO₂ sensor: {e}")
+                    print(f"Error reading CO₂ sensor: {e}")
             
             # Temperature and Humidity Reading
             temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
@@ -57,10 +57,14 @@ def background_sensor_read():
                     humidity = dht_device.humidity
                 except RuntimeError as error:
                     print(f"DHT sensor read error: {error}")
+                    # Use fallback values in case of a runtime error
+                    temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
                 except Exception as error:
                     print(f"Critical error with DHT sensor: {error}")
                     dht_device.exit()
                     dht_device = None  # Disable further readings if the sensor fails
+                    # Use fallback values in case the sensor is disabled
+                    temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
 
             # Add a timestamp for the reading
             sensor_data = {

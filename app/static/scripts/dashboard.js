@@ -65,99 +65,50 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.on('update_dashboard', (data) => {
         console.log('Received data:', data);
         const { co2, o2, temperature, humidity } = data;
-        if (typeof co2 !== 'number' || typeof o2 !== 'number' || typeof temperature !== 'number' || typeof humidity !== 'number') {
-            console.error('Invalid data types:', data);
-            return;
-        }
-
     
         const now = new Date().toLocaleTimeString();
-
-        // Update CO2 value
-        document.getElementById('co2').textContent = `${co2} ppm`;
-
-        // Update CO2 chart
+    
+        // Update CO₂ value and chart
+        const co2Value = typeof co2 === 'number' ? co2 : 400; // Fallback to 400 ppm if invalid
+        document.getElementById('co2').textContent = `${co2Value} ppm`;
         co2Chart.data.labels.push(now);
-        co2Chart.data.datasets[0].data.push(co2);
-
-        // Remove old data if more than 10 points
+        co2Chart.data.datasets[0].data.push(co2Value);
         if (co2Chart.data.labels.length > 10) {
             co2Chart.data.labels.shift();
             co2Chart.data.datasets[0].data.shift();
         }
-
-        // Compute the maximum value of the last 10 data points
-        let lastTenValuesco2 = co2Chart.data.datasets[0].data; // Array of current data points
-        let maxLastTenco2 = Math.max(...lastTenValuesco2); // Find max value in the last 10 points
-
-        // Ensure y-axis minimum is 1000 and increment in steps of 100
-        let maxYValueco2 = Math.max(1000, Math.ceil((maxLastTenco2 + 100) / 100) * 100); // Round up to the nearest 100
-
-        // Dynamically update the y-axis range
-        co2Chart.options.scales.y = {
-            beginAtZero: true,
-            min: 0, // Start y-axis at 0 for clarity
-            max: maxYValueco2
-        };
-
-        // Update the chart
         co2Chart.update();
-
-
-
-        
-        // Update O2 value
-        document.getElementById('o2').textContent = `${o2} ppm`;
-
-        // Update O2 chart
+    
+        // Update O₂ value and chart
+        const o2Value = typeof o2 === 'number' ? o2 : 21; // Fallback to 21% if invalid
+        document.getElementById('o2').textContent = `${o2Value} ppm`;
         o2Chart.data.labels.push(now);
-        o2Chart.data.datasets[0].data.push(o2);
-
-        // Remove old data if more than 10 points
+        o2Chart.data.datasets[0].data.push(o2Value);
         if (o2Chart.data.labels.length > 10) {
             o2Chart.data.labels.shift();
             o2Chart.data.datasets[0].data.shift();
         }
-
-        // Compute the maximum value of the last 10 data points
-        let lastTenValueso2 = o2Chart.data.datasets[0].data; // Array of current data points
-        let maxLastTeno2 = Math.max(...lastTenValueso2); // Find max value in the last 10 points
-
-        // Ensure y-axis minimum is 1000 and increment in steps of 100
-        let maxYValueo2 = Math.max(1000, Math.ceil((maxLastTeno2 + 100) / 100) * 100); // Round up to the nearest 100
-
-        // Dynamically update the y-axis range
-        o2Chart.options.scales.y = {
-            beginAtZero: true,
-            min: 0, // Start y-axis at 0 for clarity
-            max: maxYValueo2
-        };
-
-        // Update the chart
         o2Chart.update();
-
-
-
-        // Update CO2 value
-        document.getElementById('co2').textContent = `${co2} ppm`;
-        // Update Temperature chart
+    
+        // Update Temperature value and chart
+        const tempValue = typeof temperature === 'number' ? temperature : 22.0; // Fallback to 22°C if invalid
         tempChart.data.labels.push(now);
-        tempChart.data.datasets[0].data.push(temperature);
+        tempChart.data.datasets[0].data.push(tempValue);
         if (tempChart.data.labels.length > 10) {
             tempChart.data.labels.shift();
             tempChart.data.datasets[0].data.shift();
         }
         tempChart.update();
-
-        // Update CO2 value
-        document.getElementById('o2').textContent = `${o2} ppm`;
-        // Update Humidity chart
+    
+        // Update Humidity value and chart
+        const humidityValue = typeof humidity === 'number' ? humidity : 50.0; // Fallback to 50% if invalid
         humidityChart.data.labels.push(now);
-        humidityChart.data.datasets[0].data.push(humidity);
+        humidityChart.data.datasets[0].data.push(humidityValue);
         if (humidityChart.data.labels.length > 10) {
             humidityChart.data.labels.shift();
             humidityChart.data.datasets[0].data.shift();
         }
         humidityChart.update();
     });
+    
 });

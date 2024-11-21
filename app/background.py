@@ -67,7 +67,7 @@ def background_sensor_read():
             }, to=None)
 
         except Exception as e:
-            print(f"Error reading sensors: {e}")
+            #print(f"Error reading sensors: {e}")
             # Emit fallback data in case of error
             socketio.emit('update_dashboard', {
                 'co2': FALLBACK_CO2,

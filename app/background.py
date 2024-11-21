@@ -2,11 +2,15 @@ import time
 from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
-import Adafruit_DHT  # Example for temperature and humidity sensor (DHT22)
+import adafruit_dht
+import board  # Required for CircuitPython
 
 # Initialize DHT Sensor
-DHT_SENSOR = Adafruit_DHT.DHT22
-DHT_PIN = 4  # GPIO pin for the DHT sensor
+try:
+    dht_device = adafruit_dht.DHT22(board.D4)  # Use GPIO pin 4
+except Exception as e:
+    print(f"Error initializing DHT sensor: {e}")
+    dht_device = None
 
 # Default fallback values
 FALLBACK_CO2 = 400  # Example fallback CO2 level in ppm
@@ -42,18 +46,25 @@ def background_sensor_read():
                     print(f"Error reading CO₂ sensor: {e}")
             
             # Temperature and Humidity Reading
-            humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
-            if humidity is None or temperature is None:
-                print("DHT sensor not responding. Using fallback values.")
-                humidity, temperature = FALLBACK_HUMIDITY, FALLBACK_TEMPERATURE
+            temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
+            if dht_device is not None:
+                try:
+                    temperature = dht_device.temperature
+                    humidity = dht_device.humidity
+                except RuntimeError as error:
+                    print(f"DHT sensor read error: {error}")
+                except Exception as error:
+                    print(f"Critical error with DHT sensor: {error}")
+                    dht_device.exit()
+                    dht_device = None  # Disable further readings if the sensor fails
 
             # Emit the data to connected clients
             socketio.emit('update_dashboard', {
                 'co2': co2_value,
                 'o2': o2_value,
-                'temperature': round(temperature, 2) if temperature != "N/A" else "N/A",
-                'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
-            }, broadcast=True)
+                'temperature': round(temperature, 2),
+                'humidity': round(humidity, 2)
+            }, to=None)
 
         except Exception as e:
             print(f"Error reading sensors: {e}")
@@ -63,7 +74,7 @@ def background_sensor_read():
                 'o2': FALLBACK_O2,
                 'temperature': FALLBACK_TEMPERATURE,
                 'humidity': FALLBACK_HUMIDITY
-            }, broadcast=True)
+            }, to=None)
 
         # Wait 1 second before the next reading
         socketio.sleep(1)

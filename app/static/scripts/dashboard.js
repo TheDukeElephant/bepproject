@@ -87,17 +87,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Compute the maximum value of the last 10 data points
-        let lastTenValues = co2Chart.data.datasets[0].data; // Array of current data points
-        let maxLastTen = Math.max(...lastTenValues); // Find max value in the last 10 points
+        let lastTenValuesco2 = co2Chart.data.datasets[0].data; // Array of current data points
+        let maxLastTenco2 = Math.max(...lastTenValuesco2); // Find max value in the last 10 points
 
         // Ensure y-axis minimum is 1000 and increment in steps of 100
-        let maxYValue = Math.max(1000, Math.ceil((maxLastTen + 100) / 100) * 100); // Round up to the nearest 100
+        let maxYValueco2 = Math.max(1000, Math.ceil((maxLastTenco2 + 100) / 100) * 100); // Round up to the nearest 100
 
         // Dynamically update the y-axis range
         co2Chart.options.scales.y = {
             beginAtZero: true,
             min: 0, // Start y-axis at 0 for clarity
-            max: maxYValue
+            max: maxYValueco2
         };
 
         // Update the chart
@@ -120,17 +120,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Compute the maximum value of the last 10 data points
-        let lastTenValues = o2Chart.data.datasets[0].data; // Array of current data points
-        let maxLastTen = Math.max(...lastTenValues); // Find max value in the last 10 points
+        let lastTenValueso2 = o2Chart.data.datasets[0].data; // Array of current data points
+        let maxLastTeno2 = Math.max(...lastTenValueso2); // Find max value in the last 10 points
 
         // Ensure y-axis minimum is 1000 and increment in steps of 100
-        let maxYValue = Math.max(1000, Math.ceil((maxLastTen + 100) / 100) * 100); // Round up to the nearest 100
+        let maxYValueo2 = Math.max(1000, Math.ceil((maxLastTeno2 + 100) / 100) * 100); // Round up to the nearest 100
 
         // Dynamically update the y-axis range
         o2Chart.options.scales.y = {
             beginAtZero: true,
             min: 0, // Start y-axis at 0 for clarity
-            max: maxYValue
+            max: maxYValueo2
         };
 
         // Update the chart

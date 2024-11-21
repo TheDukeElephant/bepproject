@@ -29,26 +29,26 @@ def background_sensor_read():
                 print(f"Unexpected response from sensor: {co2_response}")
 
             # Temperature and Humidity Reading
-            print("trying temp en hum now...")
+            #print("trying temp en hum now...")
             
             #this needs to change if the temp and humidity sensors are connected!!!
             #humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
             humidity = 40
             temperature = 20
-            print("trying done")
+            #print("trying done")
             if humidity is None or temperature is None:
                 humidity, temperature = "N/A", "N/A"
                 print("temp and hum are none")
 
             # Emit the data to connected clients
-            print(f"Emitting data: CO2: {co2_value}, O2: {o2_value} Temp: {temperature}, Humidity: {humidity}")
+            print(f"Emitting data: CO2: {co2_value}, o2: {o2_value} Temp: {temperature}, Humidity: {humidity}")
             socketio.emit('update_dashboard', {
                'co2': co2_value,
                'o2': co2_value,
                'temperature': round(temperature, 2) if temperature != "N/A" else "N/A",
                'humidity': round(humidity, 2) if humidity != "N/A" else "N/A"
             }, broadcast=True)
-            print("emit send")
+            #print("emit send")
 
 
         except Exception as e:

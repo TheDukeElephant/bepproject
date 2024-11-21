@@ -65,10 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.on('update_dashboard', (data) => {
         console.log('Received data:', data);
         const { co2, o2, temperature, humidity } = data;
-        if (typeof co2 !== 'number' || typeof temperature !== 'number' || typeof humidity !== 'number') {
+        if (typeof co2 !== 'number' || typeof o2 !== 'number' || typeof temperature !== 'number' || typeof humidity !== 'number') {
             console.error('Invalid data types:', data);
             return;
         }
+
     
         const now = new Date().toLocaleTimeString();
 
@@ -106,11 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         
         // Update O2 value
-        document.getElementById('o2').textContent = `${co2} ppm`;
+        document.getElementById('o2').textContent = `${o2} ppm`;
 
         // Update O2 chart
         o2Chart.data.labels.push(now);
-        o2Chart.data.datasets[0].data.push(co2);
+        o2Chart.data.datasets[0].data.push(o2);
 
         // Remove old data if more than 10 points
         if (o2Chart.data.labels.length > 10) {
@@ -149,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tempChart.update();
 
         // Update CO2 value
-        document.getElementById('co2').textContent = `${co2} ppm`;
+        document.getElementById('o2').textContent = `${o2} ppm`;
         // Update Humidity chart
         humidityChart.data.labels.push(now);
         humidityChart.data.datasets[0].data.push(humidity);

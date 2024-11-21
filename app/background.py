@@ -22,8 +22,9 @@ def background_sensor_read():
             co2_response = co2_response.strip()
             if co2_response.startswith("Z") and len(co2_response) > 1:
                 co2_value = int(co2_response[1:].strip())*10
+                o2_value = int(co2_response[1:].strip())*10
                 print(f"CO2 Concentration: {co2_value} ppm")
-                socketio.emit('update_data', {'co2': co2_value}, broadcast=True)
+                socketio.emit('update_data', {'co2': co2_value, 'o2': o2_value}, broadcast=True)
             else:
                 print(f"Unexpected response from sensor: {co2_response}")
 
@@ -40,7 +41,7 @@ def background_sensor_read():
                 print("temp and hum are none")
 
             # Emit the data to connected clients
-            print(f"Emitting data: CO2: {co2_value}, Temp: {temperature}, Humidity: {humidity}")
+            print(f"Emitting data: CO2: {co2_value}, O2: {o2_value} Temp: {temperature}, Humidity: {humidity}")
             socketio.emit('update_dashboard', {
                'co2': co2_value,
                'o2': co2_value,

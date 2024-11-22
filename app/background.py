@@ -97,9 +97,11 @@ def background_sensor_read():
 
             # Emit the data to connected clients
             socketio.emit('update_dashboard', sensor_data, to=None)
+            print("emitting correctly")
 
         except Exception as e:
             print(f"Error reading sensors: {e}")
+            print("emitting exception")
             # If an error occurs, use fallback values for sensor data
             fallback_data = {
                 'timestamp': int(time.time()),

@@ -18,18 +18,30 @@ def dashboard():
 
 @main_blueprint.route('/setup', methods=['GET', 'POST'])
 @login_required
+@main_blueprint.route('/setup', methods=['GET', 'POST'])
+@login_required
 def setup():
     if request.method == 'POST':
         # Handle the setup form submission
-        threshold = request.form.get('threshold')
+        co2_threshold = request.form.get('co2_threshold')
+        o2_threshold = request.form.get('o2_threshold')
+        temp_threshold = request.form.get('temp_threshold')
+        humidity_threshold = request.form.get('humidity_threshold')
+
         try:
-            # Save the threshold value (example logic, replace with actual saving mechanism)
+            # Save the threshold values to config.txt
             with open('config.txt', 'w') as config_file:
-                config_file.write(f"threshold={threshold}")
-            flash("Threshold saved successfully!", "success")
+                config_file.write(f"co2_threshold={co2_threshold}\n")
+                config_file.write(f"o2_threshold={o2_threshold}\n")
+                config_file.write(f"temp_threshold={temp_threshold}\n")
+                config_file.write(f"humidity_threshold={humidity_threshold}\n")
+            
+            flash("Thresholds saved successfully!", "success")
         except Exception as e:
-            flash(f"Error saving threshold: {e}", "error")
+            flash(f"Error saving thresholds: {e}", "error")
+        
         # Redirect back to the dashboard after form submission
         return redirect(url_for('main.dashboard'))
+
     # Render the setup page for GET requests
     return render_template('setup.html')

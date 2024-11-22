@@ -100,7 +100,8 @@ def background_sensor_read():
             socketio.emit('update_dashboard', sensor_data, to=None)
             print("Emitting data successfully.")
 
-        except Exception as e:
+        except Exception:
+
             #print(f"Error reading sensors: {e}")
             # If an error occurs, emit only fallback values for the sensor that failed
             fallback_data = {

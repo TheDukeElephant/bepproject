@@ -1,4 +1,5 @@
 import time
+import serial
 from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
@@ -22,8 +23,17 @@ FALLBACK_HUMIDITY = 50.0  # Example fallback humidity in %
 # Buffer to store recent data for reconnections
 data_buffer = deque(maxlen=10)  # Store up to the last 10 updates
 
+def initialize_serial():
+    try:
+        # Initialize the serial port (make sure /dev/serial0 is the correct port)
+        ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+        return ser
+    except Exception as e:
+        print(f"Error initializing serial port: {e}")
+        return None
+
 def background_sensor_read():
-    ser = initialize_serial()  # Initialize CO₂ sensor
+    ser = initialize_serial()  # Initialize CO₂ sensor via UART
     if ser is None:
         print("Serial port could not be initialized. Using fallback values for CO₂ and O₂.")
 
@@ -35,27 +45,22 @@ def background_sensor_read():
 
             if ser is not None:
                 try:
-                    ser.write(b'Z\r\n')
-                    time.sleep(0.1)
+                    ser.write(b'Z\r\n')  # Command to the sensor (check your sensor's documentation)
+                    time.sleep(0.1)  # Allow time for response
                     co2_response = ""
                     while ser.in_waiting > 0:
                         co2_response += ser.read().decode("utf-8")
                     co2_response = co2_response.strip()
                     if co2_response.startswith("Z") and len(co2_response) > 1:
+                        # Parse CO2 data from response (this depends on your sensor's format)
                         co2_value = int(co2_response[1:].strip()) * 10
-                        o2_value = int(co2_response[1:].strip()) * 10
+                        o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
                     else:
-                        print(f"Unexpected response from sensor: {co2_response}")
+                        print(f"Unexpected response from CO₂ sensor: {co2_response}")
                 except Exception as e:
-                    #print(f"Error reading CO₂ sensor: {e}")
-                    fallback_data = {
-                        'timestamp': int(time.time()),
-                        'co2': FALLBACK_CO2,
-                        'o2': FALLBACK_O2,
-                        'temperature': FALLBACK_TEMPERATURE,
-                        'humidity': FALLBACK_HUMIDITY
-                    }
-                    socketio.emit('update_dashboard', fallback_data, to=None)
+                    print(f"Error reading CO₂ sensor: {e}")
+                    co2_value = FALLBACK_CO2
+                    o2_value = FALLBACK_O2
             
             # Temperature and Humidity Reading
             temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
@@ -90,7 +95,7 @@ def background_sensor_read():
             socketio.emit('update_dashboard', sensor_data, to=None)
 
         except Exception as e:
-            #print(f"Error reading sensors: {e}")
+            print(f"Error reading sensors: {e}")
             # Emit fallback data in case of error
             fallback_data = {
                 'timestamp': int(time.time()),
@@ -103,7 +108,6 @@ def background_sensor_read():
 
         # Wait 1 second before the next reading
         socketio.sleep(1)
-
 
 @socketio.on('request_data')
 def send_buffered_data():

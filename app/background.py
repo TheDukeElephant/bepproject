@@ -8,7 +8,7 @@ from collections import deque
 
 # Initialize DHT Sensor
 try:
-    dht_device = adafruit_dht.DHT22(board.D4)  # Use GPIO pin 4
+    dht_device = Adafruit_DHT.DHT22(board.D4)  # Use GPIO pin 4
 except Exception as e:
     print(f"Error initializing DHT sensor: {e}")
     dht_device = None

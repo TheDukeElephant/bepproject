@@ -11,7 +11,7 @@ from collections import deque
 # Initialize DHT Sensor
 dht_device = None  # Initialize to None to avoid reference errors
 
-# Initialize DHT Sensor
+# Try to initialize the DHT sensor
 try:
     dht_device = Adafruit_DHT.DHT22(board.D4)  # Use GPIO pin 4
 except Exception as e:
@@ -33,10 +33,13 @@ def background_sensor_read():
 
     while True:
         try:
-            # CO₂ and O₂ Sensor Reading
+            # Initialize fallback values
             co2_value = FALLBACK_CO2
             o2_value = FALLBACK_O2
+            temperature = FALLBACK_TEMPERATURE
+            humidity = FALLBACK_HUMIDITY
 
+            # CO₂ and O₂ Sensor Reading
             if ser is not None:
                 try:
                     ser.write(b'Z 2\r\n')  # Command to the sensor (check your sensor's documentation)
@@ -54,29 +57,31 @@ def background_sensor_read():
                         print(f"Response from CO₂ sensor: {co2_value}")
                     else:
                         print(f"Unexpected response from CO₂ sensor: {co2_response}")
-                        co2_value = FALLBACK_CO2
-                        o2_value = FALLBACK_O2
                 except Exception as e:
                     print(f"Error reading CO₂ sensor: {e}")
                     co2_value = FALLBACK_CO2
                     o2_value = FALLBACK_O2
 
             # Temperature and Humidity Reading
-            temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
             if dht_device is not None:
                 try:
-                    temperature = dht_device.temperature
-                    humidity = dht_device.humidity
+                    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, board.D4)
+                    if humidity is None or temperature is None:
+                        print("Failed to read from DHT sensor, using fallback values.")
+                        temperature = FALLBACK_TEMPERATURE
+                        humidity = FALLBACK_HUMIDITY
                 except RuntimeError as error:
                     print(f"DHT sensor read error: {error}")
                     # Use fallback values in case of a runtime error
-                    temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
+                    temperature = FALLBACK_TEMPERATURE
+                    humidity = FALLBACK_HUMIDITY
                 except Exception as error:
                     print(f"Critical error with DHT sensor: {error}")
-                    dht_device.exit()
-                    dht_device = None  # Disable further readings if the sensor fails
+                    # Disable further readings if the sensor fails
+                    dht_device = None
                     # Use fallback values in case the sensor is disabled
-                    temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
+                    temperature = FALLBACK_TEMPERATURE
+                    humidity = FALLBACK_HUMIDITY
 
             # Add a timestamp for the reading
             sensor_data = {
@@ -95,12 +100,19 @@ def background_sensor_read():
 
         except Exception as e:
             print(f"Error reading sensors: {e}")
-            # Emit fallback data in case of error
-            
-            socketio.emit('update_dashboard', sensor_data, to=None)
+            # If an error occurs, use fallback values for sensor data
+            fallback_data = {
+                'timestamp': int(time.time()),
+                'co2': FALLBACK_CO2,
+                'o2': FALLBACK_O2,
+                'temperature': FALLBACK_TEMPERATURE,
+                'humidity': FALLBACK_HUMIDITY
+            }
+            socketio.emit('update_dashboard', fallback_data, to=None)
 
         # Wait 1 second before the next reading
         socketio.sleep(1)
+
 
 @socketio.on('request_data')
 def send_buffered_data():

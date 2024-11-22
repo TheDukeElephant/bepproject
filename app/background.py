@@ -2,7 +2,7 @@ import time
 from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
-import adafruit_dht
+import Adafruit_DHT
 import board  # Required for CircuitPython
 from collections import deque
 

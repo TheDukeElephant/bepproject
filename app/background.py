@@ -26,15 +26,6 @@ FALLBACK_HUMIDITY = 50.0  # Example fallback humidity in %
 # Buffer to store recent data for reconnections
 data_buffer = deque(maxlen=10)  # Store up to the last 10 updates
 
-def initialize_serial():
-    try:
-        # Initialize the serial port (make sure /dev/serial0 is the correct port)
-        ser = serial.Serial('/dev/serial0', 9600, timeout=1)
-        return ser
-    except Exception as e:
-        print(f"Error initializing serial port: {e}")
-        return None
-
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
     if ser is None:

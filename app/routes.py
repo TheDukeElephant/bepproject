@@ -18,8 +18,6 @@ def dashboard():
 
 @main_blueprint.route('/setup', methods=['GET', 'POST'])
 @login_required
-@main_blueprint.route('/setup', methods=['GET', 'POST'])
-@login_required
 def setup():
     if request.method == 'POST':
         # Handle the setup form submission

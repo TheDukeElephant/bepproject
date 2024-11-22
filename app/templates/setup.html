@@ -31,5 +31,16 @@
 
     <!-- Button to go back to the Dashboard -->
     <a href="{{ url_for('main.dashboard') }}"><button>Back to Dashboard</button></a>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

@@ -189,8 +189,9 @@ a {
     max-width: 600px;
     width: 100%;
     text-align: center;
-    margin: auto;
-    margin-top: 20px;
+    margin: auto; /* Center horizontally */
+    min-height: 100vh; /* Ensure full-screen height for vertical centering */
+    justify-content: center; /* Center contents vertically */
 }
 
 .setup-container h1 {

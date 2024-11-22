@@ -9,37 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/dashboard.js') }}" defer></script>
-    <style>
-        .header-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
 
-        .header-title {
-            flex: 1;
-            text-align: center;
-            margin: 0;
-        }
-
-        .header-icons {
-            position: absolute;
-            right: 10px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .icon-link {
-            font-size: 1.5em;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .icon-link:hover {
-            color: #007BFF;
-        }
-    </style>
 </head>
 <body>
     <div class="dashboard-container">

@@ -39,8 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
             datasets: [{
                 label: 'O₂ (ppm)',
                 data: [],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(80, 102, 192, 1)',
+                backgroundColor: 'rgba(80, 102, 192, 0.2)',
             }]
         },
         options: { responsive: true }

@@ -45,7 +45,7 @@ def background_sensor_read():
 
             if ser is not None:
                 try:
-                    ser.write(b'Z\r\n')  # Command to the sensor (check your sensor's documentation)
+                    ser.write(b'K 2\r\n')  # Command to the sensor (check your sensor's documentation)
                     time.sleep(0.1)  # Allow time for response
                     co2_response = ""
                     while ser.in_waiting > 0:

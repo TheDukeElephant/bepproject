@@ -96,14 +96,8 @@ def background_sensor_read():
         except Exception as e:
             print(f"Error reading sensors: {e}")
             # Emit fallback data in case of error
-            fallback_data = {
-                'timestamp': int(time.time()),
-                'co2': FALLBACK_CO2,
-                'o2': FALLBACK_O2,
-                'temperature': FALLBACK_TEMPERATURE,
-                'humidity': FALLBACK_HUMIDITY
-            }
-            socketio.emit('update_dashboard', fallback_data, to=None)
+            
+            socketio.emit('update_dashboard', sensor_data, to=None)
 
         # Wait 1 second before the next reading
         socketio.sleep(1)

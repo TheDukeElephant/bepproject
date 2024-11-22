@@ -12,15 +12,31 @@
     <style>
         .header-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            position: relative;
         }
-        .setup-icon {
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            margin: 0;
+        }
+
+        .header-icons {
+            position: absolute;
+            right: 10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-link {
             font-size: 1.5em;
             color: #333;
             text-decoration: none;
         }
-        .setup-icon:hover {
+
+        .icon-link:hover {
             color: #007BFF;
         }
     </style>
@@ -28,16 +44,20 @@
 <body>
     <div class="dashboard-container">
         <div class="header-container">
-            <h1>Sensor Dashboard</h1>
-            <a href="{{ url_for('main.setup') }}" class="setup-icon">
-                <i class="fa-solid fa-gear"></i>
-            </a>
+            <h1 class="header-title">Sensor Dashboard</h1>
+            <div class="header-icons">
+                <a href="{{ url_for('main.setup') }}" class="icon-link">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="icon-link">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+            </div>
         </div>
 
         <div class="grid-container">
             <!-- Sensor Data
             <div class="sensor-data">
-                
                 <p>Temperature: <span id="temperature">Loading...</span></p>
                 <p>Humidity: <span id="humidity">Loading...</span></p>
             </div>
@@ -70,7 +90,6 @@
                 <canvas id="humidityChart" width="400" height="200"></canvas>
             </div>
         </div>
-        <button class="logout-button" onclick="location.href='{{ url_for('auth.logout') }}'">Logout</button>
     </div>
 </body>
 </html>

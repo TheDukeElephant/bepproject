@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let lastTimestamp = 0; // Track the most recent update timestamp
+    const co2Values = []; // Array to hold the last 10 CO2 values
 
     // Set up chart data for CO₂
     const co2Chart = new Chart(document.getElementById('co2Chart').getContext('2d'), {
@@ -19,7 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
             }]
         },
-        options: { responsive: true }
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 1000, // Default max Y-axis value for CO2
+                }
+            }
+        }
     });
 
     // Set up chart data for O₂
@@ -87,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const co2Value = typeof co2 === 'number' ? co2 : 400; // Fallback to 400 ppm if invalid
         document.getElementById('co2').textContent = `${co2Value} ppm`;
         updateChart(co2Chart, now, co2Value);
+        updateCO2YAxis(co2Value); // Update Y-axis based on the latest CO2 value
 
         // Update O₂ value and chart
         const o2Value = typeof o2 === 'number' ? o2 : 21; // Fallback to 21% if invalid
@@ -130,5 +140,29 @@ document.addEventListener("DOMContentLoaded", () => {
             chart.data.datasets[0].data.shift();
         }
         chart.update();
+    }
+
+    /**
+     * Updates the Y-axis of the CO2 chart based on the maximum CO2 value in the last 10 readings.
+     * If the maximum value exceeds 1000, adjust the Y-axis to go from 0 to max_value + 100.
+     * @param {number} co2Value - The current CO2 reading.
+     */
+    function updateCO2YAxis(co2Value) {
+        co2Values.push(co2Value);
+
+        // Keep only the last 10 CO2 values
+        if (co2Values.length > 10) {
+            co2Values.shift();
+        }
+
+        // Find the max value in the last 10 CO2 readings
+        const maxCO2 = Math.max(...co2Values);
+
+        // Set Y-axis range based on the max value
+        const newMax = maxCO2 > 1000 ? maxCO2 + 100 : 1000;
+
+        // Update the Y-axis of the CO2 chart
+        co2Chart.options.scales.y.suggestedMax = newMax;
+        co2Chart.update();
     }
 });

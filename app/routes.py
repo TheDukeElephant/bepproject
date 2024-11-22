@@ -19,6 +19,8 @@ def dashboard():
 @main_blueprint.route('/setup', methods=['GET', 'POST'])
 @login_required
 def setup():
+    config_file_path = 'config.txt'
+
     if request.method == 'POST':
         # Handle the setup form submission
         co2_threshold = request.form.get('co2_threshold')
@@ -28,7 +30,7 @@ def setup():
 
         try:
             # Save the threshold values to config.txt
-            with open('config.txt', 'w') as config_file:
+            with open(config_file_path, 'w') as config_file:
                 config_file.write(f"co2_threshold={co2_threshold}\n")
                 config_file.write(f"o2_threshold={o2_threshold}\n")
                 config_file.write(f"temp_threshold={temp_threshold}\n")
@@ -41,5 +43,24 @@ def setup():
         # Redirect back to the dashboard after form submission
         return redirect(url_for('main.dashboard'))
 
-    # Render the setup page for GET requests
-    return render_template('setup.html')
+    # For GET requests, load existing thresholds from config.txt
+    thresholds = {
+        "co2_threshold": "",
+        "o2_threshold": "",
+        "temp_threshold": "",
+        "humidity_threshold": ""
+    }
+    try:
+        # Read the config file if it exists
+        with open(config_file_path, 'r') as config_file:
+            for line in config_file:
+                key, value = line.strip().split('=')
+                thresholds[key] = value
+    except FileNotFoundError:
+        flash("No configuration file found. Please set thresholds.", "info")
+    except Exception as e:
+        flash(f"Error reading configuration: {e}", "error")
+
+    # Render the setup page with current thresholds
+    return render_template('setup.html', thresholds=thresholds)
+

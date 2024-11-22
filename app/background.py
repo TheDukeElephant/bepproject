@@ -7,12 +7,15 @@ import Adafruit_DHT
 import board  # Required for CircuitPython
 from collections import deque
 
+
+# Initialize DHT Sensor
+dht_device = None  # Initialize to None to avoid reference errors
+
 # Initialize DHT Sensor
 try:
     dht_device = Adafruit_DHT.DHT22(board.D4)  # Use GPIO pin 4
 except Exception as e:
     print(f"Error initializing DHT sensor: {e}")
-    dht_device = None
 
 # Default fallback values
 FALLBACK_CO2 = 400  # Example fallback CO2 level in ppm
@@ -45,23 +48,27 @@ def background_sensor_read():
 
             if ser is not None:
                 try:
-                    ser.write(b'K 2\r\n')  # Command to the sensor (check your sensor's documentation)
+                    ser.write(b'Z 2\r\n')  # Command to the sensor (check your sensor's documentation)
                     time.sleep(0.1)  # Allow time for response
                     co2_response = ""
                     while ser.in_waiting > 0:
                         co2_response += ser.read().decode("utf-8")
                     co2_response = co2_response.strip()
+
+                    # Check if the response starts with "Z" (or whatever your sensor uses for valid data)
                     if co2_response.startswith("Z") and len(co2_response) > 1:
-                        # Parse CO2 data from response (this depends on your sensor's format)
+                        # If valid response, parse it
                         co2_value = int(co2_response[1:].strip()) * 10
                         o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
                     else:
                         print(f"Unexpected response from CO₂ sensor: {co2_response}")
+                        co2_value = FALLBACK_CO2
+                        o2_value = FALLBACK_O2
                 except Exception as e:
                     print(f"Error reading CO₂ sensor: {e}")
                     co2_value = FALLBACK_CO2
                     o2_value = FALLBACK_O2
-            
+
             # Temperature and Humidity Reading
             temperature, humidity = FALLBACK_TEMPERATURE, FALLBACK_HUMIDITY
             if dht_device is not None:

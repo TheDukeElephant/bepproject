@@ -9,11 +9,31 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='scripts/dashboard.js') }}" defer></script>
+    <style>
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .setup-icon {
+            font-size: 1.5em;
+            color: #333;
+            text-decoration: none;
+        }
+        .setup-icon:hover {
+            color: #007BFF;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <h1>Sensor Dashboard</h1>
-        
+        <div class="header-container">
+            <h1>Sensor Dashboard</h1>
+            <a href="{{ url_for('main.setup') }}" class="setup-icon">
+                <i class="fa-solid fa-gear"></i>
+            </a>
+        </div>
+
         <div class="grid-container">
             <!-- Sensor Data
             <div class="sensor-data">
@@ -51,7 +71,6 @@
             </div>
         </div>
         <button class="logout-button" onclick="location.href='{{ url_for('auth.logout') }}'">Logout</button>
-        <a href="{{ url_for('main.setup') }}"><button>Setup</button></a>
     </div>
 </body>
 </html>

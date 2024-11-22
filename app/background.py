@@ -83,14 +83,25 @@ def background_sensor_read():
                     temperature = FALLBACK_TEMPERATURE
                     humidity = FALLBACK_HUMIDITY
 
-            # Add a timestamp for the reading
-            sensor_data = {
-                'timestamp': int(time.time()),
-                'co2': co2_value,
-                'o2': o2_value,
-                'temperature': round(temperature, 2),
-                'humidity': round(humidity, 2)
-            }
+            # If both sensors fail, use fallback values
+            if co2_value == FALLBACK_CO2 and temperature == FALLBACK_TEMPERATURE:
+                print("Both sensors failed. Using fallback values for all.")
+                sensor_data = {
+                    'timestamp': int(time.time()),
+                    'co2': FALLBACK_CO2,
+                    'o2': FALLBACK_O2,
+                    'temperature': FALLBACK_TEMPERATURE,
+                    'humidity': FALLBACK_HUMIDITY
+                }
+            else:
+                # Otherwise, use the valid values collected
+                sensor_data = {
+                    'timestamp': int(time.time()),
+                    'co2': co2_value,
+                    'o2': o2_value,
+                    'temperature': round(temperature, 2),
+                    'humidity': round(humidity, 2)
+                }
 
             # Store data in buffer
             data_buffer.append(sensor_data)

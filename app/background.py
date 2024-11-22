@@ -59,6 +59,7 @@ def background_sensor_read():
                         print(f"Unexpected response from CO₂ sensor: {co2_response}")
                 except Exception as e:
                     print(f"Error reading CO₂ sensor: {e}")
+                    # Use fallback values for CO₂ sensor
                     co2_value = FALLBACK_CO2
                     o2_value = FALLBACK_O2
 
@@ -79,11 +80,11 @@ def background_sensor_read():
                     print(f"Critical error with DHT sensor: {error}")
                     # Disable further readings if the sensor fails
                     dht_device = None
-                    # Use fallback values in case the sensor is disabled
+                    # Use fallback values for DHT sensor
                     temperature = FALLBACK_TEMPERATURE
                     humidity = FALLBACK_HUMIDITY
 
-            # If both sensors fail, use fallback values
+            # Prepare sensor data to emit
             sensor_data = {
                 'timestamp': int(time.time()),
                 'co2': co2_value,
@@ -97,21 +98,20 @@ def background_sensor_read():
 
             # Emit the data to connected clients
             socketio.emit('update_dashboard', sensor_data, to=None)
-            print("emitting correctly")
+            print("Emitting data successfully.")
 
         except Exception as e:
             print(f"Error reading sensors: {e}")
-            print("emitting exception")
-            # If an error occurs, use fallback values for sensor data
-            """ fallback_data = {
+            # If an error occurs, emit only fallback values for the sensor that failed
+            fallback_data = {
                 'timestamp': int(time.time()),
-                'co2': FALLBACK_CO2,
-                'o2': FALLBACK_O2,
-                'temperature': FALLBACK_TEMPERATURE,
-                'humidity': FALLBACK_HUMIDITY
+                'co2': FALLBACK_CO2 if co2_value == FALLBACK_CO2 else co2_value,
+                'o2': FALLBACK_O2 if o2_value == FALLBACK_O2 else o2_value,
+                'temperature': FALLBACK_TEMPERATURE if temperature == FALLBACK_TEMPERATURE else temperature,
+                'humidity': FALLBACK_HUMIDITY if humidity == FALLBACK_HUMIDITY else humidity
             }
             socketio.emit('update_dashboard', fallback_data, to=None)
- """
+
         # Wait 1 second before the next reading
         socketio.sleep(1)
 

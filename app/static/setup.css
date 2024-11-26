@@ -4,11 +4,13 @@
 }
 .controls-container {
     text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 
 .controls-container button {
-    display: block;
-    width: 100%;
+    align-self: flex-end;
+    width: auto;
     margin-top: 10px;
 }
 body {

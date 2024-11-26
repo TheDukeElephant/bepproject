@@ -10,6 +10,18 @@ body {
     background-color: #f0f4f8;
     color: #333;
 }
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
 
 /* Login Form Styling */
 .login-container {

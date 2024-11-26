@@ -49,12 +49,12 @@ body {
 .control {
     margin-bottom: 10px;
 }
-
 .toggle-button {
     padding: 10px 20px;
     background-color: #ccc;
     border: none;
     cursor: pointer;
+    margin-left: auto; /* Align to the right */
 }
 
 .toggle-button.on {

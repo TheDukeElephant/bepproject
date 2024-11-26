@@ -13,36 +13,28 @@ body {
 
 .main-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
     background-color: #fff;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    max-width: 900px;
+    max-width: 1200px;
     width: 100%;
     text-align: center;
 }
 
-.setup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.form-container, .controls-container {
     background-color: #fff;
-    padding: 40px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-    margin: auto; /* Center horizontally */
-    min-height: 100vh; /* Ensure full-screen height for vertical centering */
-    justify-content: center; /* Center contents vertically */
+    width: 45%;
 }
 
-.setup-container h1 {
+.form-container h1, .controls-container h2 {
     color: #007bff;
-    font-size: 2em;
     margin-bottom: 20px;
 }
 
@@ -138,8 +130,13 @@ form button:hover {
 
 /* Responsive Design for Setup Page */
 @media (max-width: 768px) {
-    .setup-container {
-        padding: 20px;
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-container, .controls-container {
+        width: 100%;
+        margin-bottom: 20px;
     }
     form input[type="number"] {
         font-size: 0.9em;

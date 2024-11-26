@@ -29,17 +29,15 @@ def setup():
         humidity_threshold = request.form.get('humidity_threshold')
 
         try:
-            # Save the threshold values to config.txt
             with open(config_file_path, 'w') as config_file:
-                config_file.write(f"co2_threshold={co2_threshold}\n")
-                config_file.write(f"o2_threshold={o2_threshold}\n")
-                config_file.write(f"temp_threshold={temp_threshold}\n")
-                config_file.write(f"humidity_threshold={humidity_threshold}\n")
-            
+                config_file.write(f"co2_threshold={int(co2_threshold)}\n")
+                config_file.write(f"o2_threshold={round(float(o2_threshold), 1)}\n")
+                config_file.write(f"temp_threshold={round(float(temp_threshold), 1)}\n")
+                config_file.write(f"humidity_threshold={round(float(humidity_threshold), 1)}\n")
             flash("Thresholds saved successfully!", "success")
         except Exception as e:
             flash(f"Error saving thresholds: {e}", "error")
-        
+
         # Redirect back to the dashboard after form submission
         return redirect(url_for('main.dashboard'))
 
@@ -52,14 +50,13 @@ def setup():
     }
 
     try:
-        # Read the config file if it exists
         with open(config_file_path, 'r') as config_file:
             for line in config_file:
                 key, value = line.strip().split('=')
                 if key == "co2_threshold":
                     thresholds[key] = int(value)
                 elif key in {"o2_threshold", "temp_threshold", "humidity_threshold"}:
-                    thresholds[key] = float(value)
+                    thresholds[key] = round(float(value), 1)  # Round to 1 decimal place
     except FileNotFoundError:
         flash("No configuration file found. Please set thresholds.", "info")
     except Exception as e:

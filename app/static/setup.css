@@ -48,6 +48,31 @@ body {
     width: 100%;
     text-align: center;
 }
+.threshold-container {
+    margin-bottom: 1em;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+input[type="number"] {
+    width: 4em;
+    text-align: center;
+}
+
+button.increment-button,
+button.decrement-button {
+    width: 2em;
+    height: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    cursor: pointer;
+}
 
 .login-container h2 {
     color: #007bff;

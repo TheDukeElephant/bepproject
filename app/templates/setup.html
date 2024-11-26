@@ -9,6 +9,7 @@
 <body>
     <div class="setup-container">
         <h1>Setup</h1>
+        
         <form id="setup-form" method="POST" action="{{ url_for('main.setup') }}">
             <!-- CO₂ Threshold Input -->
             <label for="co2-threshold">CO₂ Threshold (ppm):</label>
@@ -30,7 +31,7 @@
             <input type="number" id="humidity-threshold" name="humidity_threshold" min="0" max="100" required 
                    value="{{ thresholds.humidity_threshold }}" />
 
-            <!-- Submit Butto test n -->
+            <!-- Submit Button -->
             <button type="submit">Save</button>
         </form>
 
@@ -47,6 +48,35 @@
                 </ul>
             {% endif %}
         {% endwith %}
+    </div>
+
+    <div class="controls-container">
+        <h2>Controls</h2>
+        
+        <div class="control">
+            <label for="pump-toggle">Pump:</label>
+            <button id="pump-toggle" class="toggle-button" onclick="toggleDevice('pump')">Off</button>
+        </div>
+        
+        <div class="control">
+            <label for="co2-solenoid-toggle">CO₂ Solenoid:</label>
+            <button id="co2-solenoid-toggle" class="toggle-button" onclick="toggleDevice('co2-solenoid')">Off</button>
+        </div>
+        
+        <div class="control">
+            <label for="argon-solenoid-toggle">Argon Solenoid:</label>
+            <button id="argon-solenoid-toggle" class="toggle-button" onclick="toggleDevice('argon-solenoid')">Off</button>
+        </div>
+        
+        <div class="control">
+            <label for="heating-element-1-toggle">Heating Element 1:</label>
+            <button id="heating-element-1-toggle" class="toggle-button" onclick="toggleDevice('heating-element-1')">Off</button>
+        </div>
+        
+        <div class="control">
+            <label for="heating-element-2-toggle">Heating Element 2:</label>
+            <button id="heating-element-2-toggle" class="toggle-button" onclick="toggleDevice('heating-element-2')">Off</button>
+        </div>
     </div>
 </body>
 </html>

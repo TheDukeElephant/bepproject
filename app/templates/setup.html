@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="main-container">
-        <div class="setup-container"></div>
+        <div class="form-container">
             <h1>Setup</h1>
             
             <form id="setup-form" method="POST" action="{{ url_for('main.setup') }}">
@@ -36,52 +36,50 @@
                 <!-- Submit Button -->
                 <button type="submit">Save</button>
             </form>
-
-            <div class="controls-container">
-                <h2>Controls</h2>
-                
-                <div class="control">
-                    <label for="pump-toggle">Pump:</label>
-                    <button id="pump-toggle" class="toggle-button" onclick="toggleDevice('pump')">Off</button>
-                </div>
-                
-                <div class="control">
-                    <label for="co2-solenoid-toggle">CO₂ Solenoid:</label>
-                    <button id="co2-solenoid-toggle" class="toggle-button" onclick="toggleDevice('co2-solenoid')">Off</button>
-                </div>
-                
-                <div class="control">
-                    <label for="argon-solenoid-toggle">Argon Solenoid:</label>
-                    <button id="argon-solenoid-toggle" class="toggle-button" onclick="toggleDevice('argon-solenoid')">Off</button>
-                </div>
-                
-                <div class="control">
-                    <label for="heating-element-top-toggle">Heating Element Top:</label>
-                    <button id="heating-element-top-toggle" class="toggle-button" onclick="toggleDevice('heating-element-top')">Off</button>
-                </div>
-                
-                <div class="control">
-                    <label for="heating-element-bottom-toggle">Heating Element Bottom:</label>
-                    <button id="heating-element-bottom-toggle" class="toggle-button" onclick="toggleDevice('heating-element-bottom')">Off</button>
-                </div>
-            </div>
-
-            <!-- Button to go back to the Dashboard -->
-            <a href="{{ url_for('main.dashboard') }}"><button class="back-button">Back to Dashboard</button></a>
-
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <ul>
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
         </div>
 
-        
+        <div class="controls-container">
+            <h2>Controls</h2>
+            
+            <div class="control">
+                <label for="pump-toggle">Pump:</label>
+                <button id="pump-toggle" class="toggle-button" onclick="toggleDevice('pump')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="co2-solenoid-toggle">CO₂ Solenoid:</label>
+                <button id="co2-solenoid-toggle" class="toggle-button" onclick="toggleDevice('co2-solenoid')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="argon-solenoid-toggle">Argon Solenoid:</label>
+                <button id="argon-solenoid-toggle" class="toggle-button" onclick="toggleDevice('argon-solenoid')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="heating-element-top-toggle">Heating Element Top:</label>
+                <button id="heating-element-top-toggle" class="toggle-button" onclick="toggleDevice('heating-element-top')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="heating-element-bottom-toggle">Heating Element Bottom:</label>
+                <button id="heating-element-bottom-toggle" class="toggle-button" onclick="toggleDevice('heating-element-bottom')">Off</button>
+            </div>
+        </div>
+
+        <!-- Button to go back to the Dashboard -->
+        <a href="{{ url_for('main.dashboard') }}"><button class="back-button">Back to Dashboard</button></a>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
 </body>
 </html>

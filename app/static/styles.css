@@ -30,6 +30,25 @@ body {
     font-size: 1.8em;
     margin-bottom: 20px;
 }
+.controls-container {
+    margin-top: 20px;
+}
+
+.control {
+    margin-bottom: 10px;
+}
+
+.toggle-button {
+    padding: 10px 20px;
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+}
+
+.toggle-button.on {
+    background-color: #4CAF50;
+    color: white;
+}
 
 form label {
     display: block;

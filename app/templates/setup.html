@@ -8,75 +8,77 @@
     <script src="{{ url_for('static', filename='scripts/setup.js') }}" defer></script>
 </head>
 <body>
-    <div class="setup-container">
-        <h1>Setup</h1>
-        
-        <form id="setup-form" method="POST" action="{{ url_for('main.setup') }}">
-            <!-- CO₂ Threshold Input -->
-            <label for="co2-threshold">CO₂ Threshold (ppm):</label>
-            <input type="number" id="co2-threshold" name="co2_threshold" min="0" required 
-                   value="{{ thresholds.co2_threshold }}" />
+    <div class="main-container">
+        <div class="setup-container"></div>
+            <h1>Setup</h1>
+            
+            <form id="setup-form" method="POST" action="{{ url_for('main.setup') }}">
+                <!-- CO₂ Threshold Input -->
+                <label for="co2-threshold">CO₂ Threshold (ppm):</label>
+                <input type="number" id="co2-threshold" name="co2_threshold" min="0" required 
+                       value="{{ thresholds.co2_threshold }}" />
 
-            <!-- O₂ Threshold Input -->
-            <label for="o2-threshold">O₂ Threshold (%):</label>
-            <input type="number" id="o2-threshold" name="o2_threshold" min="0" max="100" required 
-                   value="{{ thresholds.o2_threshold }}" />
+                <!-- O₂ Threshold Input -->
+                <label for="o2-threshold">O₂ Threshold (%):</label>
+                <input type="number" id="o2-threshold" name="o2_threshold" min="0" max="100" required 
+                       value="{{ thresholds.o2_threshold }}" />
 
-            <!-- Temperature Threshold Input -->
-            <label for="temp-threshold">Temperature Threshold (°C):</label>
-            <input type="number" id="temp-threshold" name="temp_threshold" min="-50" max="100" required 
-                   value="{{ thresholds.temp_threshold }}" />
+                <!-- Temperature Threshold Input -->
+                <label for="temp-threshold">Temperature Threshold (°C):</label>
+                <input type="number" id="temp-threshold" name="temp_threshold" min="-50" max="100" required 
+                       value="{{ thresholds.temp_threshold }}" />
 
-            <!-- Humidity Threshold Input -->
-            <label for="humidity-threshold">Humidity Threshold (%):</label>
-            <input type="number" id="humidity-threshold" name="humidity_threshold" min="0" max="100" required 
-                   value="{{ thresholds.humidity_threshold }}" />
+                <!-- Humidity Threshold Input -->
+                <label for="humidity-threshold">Humidity Threshold (%):</label>
+                <input type="number" id="humidity-threshold" name="humidity_threshold" min="0" max="100" required 
+                       value="{{ thresholds.humidity_threshold }}" />
 
-            <!-- Submit Button -->
-            <button type="submit">Save</button>
-        </form>
+                <!-- Submit Button -->
+                <button type="submit">Save</button>
+            </form>
 
-        <!-- Button to go back to the Dashboard -->
-        <a href="{{ url_for('main.dashboard') }}"><button class="back-button">Back to Dashboard</button></a>
+            <!-- Button to go back to the Dashboard -->
+            <a href="{{ url_for('main.dashboard') }}"><button class="back-button">Back to Dashboard</button></a>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </div>
-
-    <div class="controls-container">
-        <h2>Controls</h2>
-        
-        <div class="control">
-            <label for="pump-toggle">Pump:</label>
-            <button id="pump-toggle" class="toggle-button" onclick="toggleDevice('pump')">Off</button>
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul>
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
         </div>
-        
-        <div class="control">
-            <label for="co2-solenoid-toggle">CO₂ Solenoid:</label>
-            <button id="co2-solenoid-toggle" class="toggle-button" onclick="toggleDevice('co2-solenoid')">Off</button>
-        </div>
-        
-        <div class="control">
-            <label for="argon-solenoid-toggle">Argon Solenoid:</label>
-            <button id="argon-solenoid-toggle" class="toggle-button" onclick="toggleDevice('argon-solenoid')">Off</button>
-        </div>
-        
-        <div class="control">
-            <label for="heating-element-1-toggle">Heating Element 1:</label>
-            <button id="heating-element-1-toggle" class="toggle-button" onclick="toggleDevice('heating-element-1')">Off</button>
-        </div>
-        
-        <div class="control">
-            <label for="heating-element-2-toggle">Heating Element 2:</label>
-            <button id="heating-element-2-toggle" class="toggle-button" onclick="toggleDevice('heating-element-2')">Off</button>
+
+        <div class="controls-container">
+            <h2>Controls</h2>
+            
+            <div class="control">
+                <label for="pump-toggle">Pump:</label>
+                <button id="pump-toggle" class="toggle-button" onclick="toggleDevice('pump')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="co2-solenoid-toggle">CO₂ Solenoid:</label>
+                <button id="co2-solenoid-toggle" class="toggle-button" onclick="toggleDevice('co2-solenoid')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="argon-solenoid-toggle">Argon Solenoid:</label>
+                <button id="argon-solenoid-toggle" class="toggle-button" onclick="toggleDevice('argon-solenoid')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="heating-element-top-toggle">Heating Element Top:</label>
+                <button id="heating-element-top-toggle" class="toggle-button" onclick="toggleDevice('heating-element-top')">Off</button>
+            </div>
+            
+            <div class="control">
+                <label for="heating-element-bottom-toggle">Heating Element Bottom:</label>
+                <button id="heating-element-bottom-toggle" class="toggle-button" onclick="toggleDevice('heating-element-bottom')">Off</button>
+            </div>
         </div>
     </div>
 </body>

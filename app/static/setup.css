@@ -1,4 +1,8 @@
 /* General Body Styling */
+.main-container > *:not(:last-child) {
+    margin-right: 20px;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;

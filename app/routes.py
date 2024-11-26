@@ -45,17 +45,21 @@ def setup():
 
     # For GET requests, load existing thresholds from config.txt
     thresholds = {
-        "co2_threshold": "",
-        "o2_threshold": "",
-        "temp_threshold": "",
-        "humidity_threshold": ""
+    "co2_threshold": 0,
+    "o2_threshold": 0.0,
+    "temp_threshold": 0.0,
+    "humidity_threshold": 0.0
     }
+
     try:
         # Read the config file if it exists
         with open(config_file_path, 'r') as config_file:
             for line in config_file:
                 key, value = line.strip().split('=')
-                thresholds[key] = value
+                if key == "co2_threshold":
+                    thresholds[key] = int(value)
+                elif key in {"o2_threshold", "temp_threshold", "humidity_threshold"}:
+                    thresholds[key] = float(value)
     except FileNotFoundError:
         flash("No configuration file found. Please set thresholds.", "info")
     except Exception as e:

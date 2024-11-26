@@ -56,7 +56,9 @@ def background_sensor_read():
                         o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
                         #print(f"Response from CO₂ sensor: {co2_value}")
                     else:
-                        print(f"Unexpected response from CO₂ sensor: {co2_response}")
+                        
+                        #print(f"Unexpected response from CO₂ sensor: {co2_response}")
+                        pass
                 except Exception as e:
                     print(f"Error reading CO₂ sensor: {e}")
                     # Use fallback values for CO₂ sensor

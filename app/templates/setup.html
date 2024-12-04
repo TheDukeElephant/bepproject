@@ -77,11 +77,17 @@
             
             <div class="control">
                 <label for="heating-element-top-toggle">Heating Element Top:</label>
+                <div class="slidecontainer">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="settopito">
+                </div>
                 <button id="heating-element-top-toggle" class="toggle-button" onclick="toggleDevice('heating-element-top')">Off</button>
             </div>
             
             <div class="control">
                 <label for="heating-element-bottom-toggle">Heating Element Bottom:</label>
+                <div class="slidecontainer">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="setbottomito">
+                </div>
                 <button id="heating-element-bottom-toggle" class="toggle-button" onclick="toggleDevice('heating-element-bottom')">Off</button>
             </div>
         </div>

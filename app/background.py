@@ -21,7 +21,7 @@ from collections import deque
 FALLBACK_CO2 = 0.04  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 21  # Example fallback O2 level in %
 FALLBACK_TEMPERATURE = 22.0  # Example fallback temperature in °C
-FALLBACK_HUMIDITY = 50.0  # Example fallback humidity in %
+FALLBACK_HUMIDITY = 36.0  # Example fallback humidity in %
 
 # Buffer to store recent data for reconnections
 data_buffer = deque(maxlen=10)  # Store up to the last 10 updates
@@ -55,7 +55,7 @@ def background_sensor_read():
                         co2_value_ppm = int(co2_response[1:].strip()) * 10
                         co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage and round to 2 decimal places
                         o2_value_ppm = int(co2_response[1:].strip()) * 10
-                        o2_value = 10 + round(o2_value_ppm / 3000, 2)# Adjust if O2 data is different
+                        o2_value = 16 + round(o2_value_ppm / 3000, 2)# Adjust if O2 data is different
                         #print("Response from CO₂ sensor went well")
                     else:
                         

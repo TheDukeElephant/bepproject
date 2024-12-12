@@ -54,10 +54,10 @@ def background_sensor_read():
                         # If valid response, parse it
                         co2_value = int(co2_response[1:].strip()) * 10
                         o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
-                        #print(f"Response from CO₂ sensor: {co2_value}")
+                        print("Response from CO₂ sensor went well")
                     else:
                         
-                        #print(f"Unexpected response from CO₂ sensor: {co2_response}")
+                        print("Unexpected response from CO₂ sensor: no Z output")
                         pass
                 except Exception as e:
                     print(f"Error reading CO₂ sensor: {e}")

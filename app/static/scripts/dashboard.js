@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let lastTimestamp = 0; // Track the most recent update timestamp
-    //const co2Values = []; // Array to hold the last 10 CO2 values
+    const co2Values = []; // Array to hold the last 10 CO2 values
 
     // Set up chart data for CO₂
     const co2Chart = new Chart(document.getElementById('co2Chart').getContext('2d'), {
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: 0.1,
+                    suggestedMax: 0.1
                 }
             }
         }
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const maxCO2 = Math.max(...co2Values);
 
         // Set Y-axis range based on the max value
-        const newMax = maxCO2 > 1000 ? maxCO2 + 100 : 1000;
+        const newMax = maxCO2 > 0.1 ? maxCO2 + 0.05 : 0.1;
 
         // Update the Y-axis of the CO2 chart
         co2Chart.options.scales.y.suggestedMax = newMax;

@@ -17,7 +17,7 @@
                     <label for="co2-threshold">CO₂ Threshold (%):</label>
                     <div class="input-wrapper">
                         <button type="button" class="decrement-button" onclick="adjustValue('co2-threshold', -0.1)">-</button>
-                        <input type="number" id="co2-threshold" name="co2_threshold" min="0" max="6" required value="{{ thresholds.co2_threshold }}" />
+                        <input type="number" id="co2-threshold" name="co2_threshold" min="0" max="6" required value="{{ thresholds.co2_threshold | round(1) }}" />
                         <button type="button" class="increment-button" onclick="adjustValue('co2-threshold', 0.1)">+</button>
                     </div>
                 </div>

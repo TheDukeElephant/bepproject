@@ -53,9 +53,7 @@ def setup():
         with open(config_file_path, 'r') as config_file:
             for line in config_file:
                 key, value = line.strip().split('=')
-                if key == "co2_threshold":
-                    thresholds[key] = int(value)
-                elif key in {"o2_threshold", "temp_threshold", "humidity_threshold"}:
+                if key in {"co2_threshold", "o2_threshold", "temp_threshold", "humidity_threshold"}:
                     thresholds[key] = round(float(value), 1)  # Round to 1 decimal place
     except FileNotFoundError:
         flash("No configuration file found. Please set thresholds.", "info")

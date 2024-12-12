@@ -20,7 +20,7 @@ from collections import deque
 # Default fallback values
 FALLBACK_CO2 = 0.04  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 21  # Example fallback O2 level in %
-FALLBACK_TEMPERATURE = 22.0  # Example fallback temperature in °C
+FALLBACK_TEMPERATURE = 18.6  # Example fallback temperature in °C
 FALLBACK_HUMIDITY = 36.0  # Example fallback humidity in %
 
 # Buffer to store recent data for reconnections

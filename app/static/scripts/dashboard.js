@@ -94,13 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update CO₂ value and chart
         const co2Value = typeof co2 === 'number' ? co2 : 400; // Fallback to 400 ppm if invalid
-        document.getElementById('co2').textContent = `${co2Value} ppm`;
+        document.getElementById('co2').textContent = `${co2Value} %`;
         updateChart(co2Chart, now, co2Value);
         updateCO2YAxis(co2Value); // Update Y-axis based on the latest CO2 value
 
         // Update O₂ value and chart
         const o2Value = typeof o2 === 'number' ? o2 : 21; // Fallback to 21% if invalid
-        document.getElementById('o2').textContent = `${o2Value} ppm`;
+        document.getElementById('o2').textContent = `${o2Value} %`;
         updateChart(o2Chart, now, o2Value);
 
         // Update Temperature value and chart

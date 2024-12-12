@@ -55,7 +55,7 @@ def background_sensor_read():
                         co2_value_ppm = int(co2_response[1:].strip()) * 10
                         co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage and round to 2 decimal places
                         o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
-                        print("Response from CO₂ sensor went well")
+                        #print("Response from CO₂ sensor went well")
                     else:
                         
                         print("Unexpected response from CO₂ sensor: no Z output")
@@ -101,7 +101,7 @@ def background_sensor_read():
 
             # Emit the data to connected clients
             socketio.emit('update_dashboard', sensor_data, to=None)
-            print("Emitting data successfully.")
+            #print("Emitting data successfully.")
 
         except Exception as e:
             print(f"Error reading sensors: {e}")

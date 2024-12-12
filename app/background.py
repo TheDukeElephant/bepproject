@@ -54,7 +54,8 @@ def background_sensor_read():
                         # If valid response, parse it
                         co2_value_ppm = int(co2_response[1:].strip()) * 10
                         co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage and round to 2 decimal places
-                        o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
+                        o2_value_ppm = int(co2_response[1:].strip()) * 10
+                        o2_value = round(o2_value_ppm / 3000, 2)# Adjust if O2 data is different
                         #print("Response from CO₂ sensor went well")
                     else:
                         

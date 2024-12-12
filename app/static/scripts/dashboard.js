@@ -20,7 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
             }]
         },
-        options: { responsive: true }
+        options: { 
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 0.1,
+                }
+            }
+        }
     });
 
     // Set up chart data for O₂

@@ -9,13 +9,13 @@ from collections import deque
 
 
 # Initialize DHT Sensor
-dht_device = None  # Initialize to None to avoid reference errors
+#dht_device = None  # Initialize to None to avoid reference errors
 
 # Try to initialize the DHT sensor
-try:
-    dht_device = Adafruit_DHT.DHT22(board.D4)  # Use GPIO pin 4
-except Exception as e:
-    print(f"Error initializing DHT sensor: {e}")
+# try:
+#     dht_device = Adafruit_DHT.DHT22(board.D4)  # Use GPIO pin 4
+# except Exception as e:
+#     print(f"Error initializing DHT sensor: {e}")
 
 # Default fallback values
 FALLBACK_CO2 = 400  # Example fallback CO2 level in ppm
@@ -66,7 +66,7 @@ def background_sensor_read():
                     o2_value = FALLBACK_O2
 
             # Temperature and Humidity Reading
-            if dht_device is not None:
+            """ if dht_device is not None:
                 try:
                     humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, board.D4)
                     if humidity is None or temperature is None:
@@ -85,7 +85,7 @@ def background_sensor_read():
                     # Use fallback values for DHT sensor
                     temperature = FALLBACK_TEMPERATURE
                     humidity = FALLBACK_HUMIDITY
-
+ """
             # Prepare sensor data to emit
             sensor_data = {
                 'timestamp': int(time.time()),
@@ -104,7 +104,7 @@ def background_sensor_read():
 
         except Exception:
 
-            print(f"Error reading sensors:fuck {e}")
+            print(f"Error reading sensors:fuck")
             # If an error occurs, emit only fallback values for the sensor that failed
             fallback_data = {
                 'timestamp': int(time.time()),

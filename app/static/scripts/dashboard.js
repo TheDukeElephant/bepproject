@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data: {
             labels: [],
             datasets: [{
-                label: 'CO₂ (ppm)',
+                label: 'CO₂ (%)',
                 data: [],
                 borderColor: 'rgba(75, 192, 192, 1)',
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',

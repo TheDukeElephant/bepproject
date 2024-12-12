@@ -52,7 +52,8 @@ def background_sensor_read():
                     # Check if the response starts with "Z" (or whatever your sensor uses for valid data)
                     if co2_response.startswith("Z") and len(co2_response) > 1:
                         # If valid response, parse it
-                        co2_value = int(co2_response[1:].strip()) * 10
+                        co2_value_ppm = int(co2_response[1:].strip()) * 10
+                        co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage and round to 2 decimal places
                         o2_value = int(co2_response[1:].strip()) * 10  # Adjust if O2 data is different
                         print("Response from CO₂ sensor went well")
                     else:
@@ -62,7 +63,7 @@ def background_sensor_read():
                 except Exception as e:
                     print(f"Error reading CO₂ sensor: {e}")
                     # Use fallback values for CO₂ sensor
-                    co2_value = FALLBACK_CO2
+                    co2_value = round(FALLBACK_CO2 / 10000, 2)
                     o2_value = FALLBACK_O2
 
             # Temperature and Humidity Reading
@@ -102,19 +103,17 @@ def background_sensor_read():
             socketio.emit('update_dashboard', sensor_data, to=None)
             print("Emitting data successfully.")
 
-        except Exception:
-
-            print(f"Error reading sensors:fuck")
+        except Exception as e:
+            print(f"Error reading sensors: {e}")
             # If an error occurs, emit only fallback values for the sensor that failed
             fallback_data = {
                 'timestamp': int(time.time()),
-                'co2': FALLBACK_CO2 if co2_value == FALLBACK_CO2 else co2_value,
-                'o2': FALLBACK_O2 if o2_value == FALLBACK_O2 else o2_value,
-                'temperature': FALLBACK_TEMPERATURE if temperature == FALLBACK_TEMPERATURE else temperature,
-                'humidity': FALLBACK_HUMIDITY if humidity == FALLBACK_HUMIDITY else humidity
+                'co2': round(FALLBACK_CO2 / 10000, 2),
+                'o2': FALLBACK_O2,
+                'temperature': round(FALLBACK_TEMPERATURE, 2),
+                'humidity': round(FALLBACK_HUMIDITY, 2)
             }
             socketio.emit('update_dashboard', fallback_data, to=None)
-
         # Wait 1 second before the next reading
         socketio.sleep(1)
 

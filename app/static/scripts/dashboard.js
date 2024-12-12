@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let lastTimestamp = 0; // Track the most recent update timestamp
-    const co2Values = []; // Array to hold the last 10 CO2 values
+    //const co2Values = []; // Array to hold the last 10 CO2 values
 
     // Set up chart data for CO₂
     const co2Chart = new Chart(document.getElementById('co2Chart').getContext('2d'), {

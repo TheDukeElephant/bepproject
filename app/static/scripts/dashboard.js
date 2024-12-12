@@ -20,15 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
             }]
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: 1000, // Default max Y-axis value for CO2
-                }
-            }
-        }
+        options: { responsive: true }
     });
 
     // Set up chart data for O₂
@@ -93,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const now = new Date().toLocaleTimeString();
 
         // Update CO₂ value and chart
-        const co2Value = typeof co2 === 'number' ? co2 : 400; // Fallback to 400 ppm if invalid
+        const co2Value = typeof co2 === 'number' ? co2 : 0.04; // Fallback to 400 ppm if invalid
         document.getElementById('co2').textContent = `${co2Value} %`;
         updateChart(co2Chart, now, co2Value);
         updateCO2YAxis(co2Value); // Update Y-axis based on the latest CO2 value

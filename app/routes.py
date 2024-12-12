@@ -30,7 +30,7 @@ def setup():
 
         try:
             with open(config_file_path, 'w') as config_file:
-                config_file.write(f"co2_threshold={int(co2_threshold)}\n")
+                config_file.write(f"co2_threshold={round(float(co2_threshold), 1)}\n")
                 config_file.write(f"o2_threshold={round(float(o2_threshold), 1)}\n")
                 config_file.write(f"temp_threshold={round(float(temp_threshold), 1)}\n")
                 config_file.write(f"humidity_threshold={round(float(humidity_threshold), 1)}\n")
@@ -43,7 +43,7 @@ def setup():
 
     # For GET requests, load existing thresholds from config.txt
     thresholds = {
-    "co2_threshold": 0,
+    "co2_threshold": 0.0,
     "o2_threshold": 0.0,
     "temp_threshold": 0.0,
     "humidity_threshold": 0.0

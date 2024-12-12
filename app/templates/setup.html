@@ -14,11 +14,11 @@
             
             <form id="setup-form" method="POST" action="{{ url_for('main.setup') }}">
                 <div class="threshold-container">
-                    <label for="co2-threshold">CO₂ Threshold (ppm):</label>
+                    <label for="co2-threshold">CO₂ Threshold (%):</label>
                     <div class="input-wrapper">
-                        <button type="button" class="decrement-button" onclick="adjustValue('co2-threshold', -1)">-</button>
-                        <input type="number" id="co2-threshold" name="co2_threshold" min="0" max="200000" required value="{{ thresholds.co2_threshold }}" />
-                        <button type="button" class="increment-button" onclick="adjustValue('co2-threshold', 1)">+</button>
+                        <button type="button" class="decrement-button" onclick="adjustValue('co2-threshold', -0.1)">-</button>
+                        <input type="number" id="co2-threshold" name="co2_threshold" min="0" max="6" required value="{{ thresholds.co2_threshold }}" />
+                        <button type="button" class="increment-button" onclick="adjustValue('co2-threshold', 0.1)">+</button>
                     </div>
                 </div>
                 

@@ -18,7 +18,7 @@ from collections import deque
 #     print(f"Error initializing DHT sensor: {e}")
 
 # Default fallback values
-FALLBACK_CO2 = 400  # Example fallback CO2 level in ppm
+FALLBACK_CO2 = 0.04  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 21  # Example fallback O2 level in %
 FALLBACK_TEMPERATURE = 22.0  # Example fallback temperature in °C
 FALLBACK_HUMIDITY = 50.0  # Example fallback humidity in %

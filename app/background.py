@@ -104,7 +104,7 @@ def background_sensor_read():
 
         except Exception:
 
-            #print(f"Error reading sensors: {e}")
+            print(f"Error reading sensors:fuck {e}")
             # If an error occurs, emit only fallback values for the sensor that failed
             fallback_data = {
                 'timestamp': int(time.time()),

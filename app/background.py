@@ -5,11 +5,11 @@ from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
 import Adafruit_DHT
-import board  # Required for CircuitPython
+import board  
 import busio
 import digitalio
 import adafruit_max31865
-import adafruit_ssd1306  # For OLED display
+import adafruit_ssd1306  
 from collections import deque
 from PIL import Image, ImageDraw, ImageFont
 

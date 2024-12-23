@@ -11,6 +11,8 @@ import digitalio
 import adafruit_max31865
 import adafruit_ssd1306  # For OLED display
 from collections import deque
+from PIL import Image, ImageDraw, ImageFont
+
 
 # Default fallback values
 FALLBACK_CO2 = 0.04  # Example fallback CO2 level in ppm
@@ -137,10 +139,13 @@ def background_sensor_read():
             socketio.emit('update_dashboard', sensor_data, to=None)
             print("Emitting data successfully.")
 
-            # Display IP address on OLED
+            # Display IP address on OLED using pillow library
             ip_address = get_ip_address()
-            oled.fill(0)
-            oled.text(f"IP: {ip_address}", 0, 0, 1)  # Use built-in font
+            image = Image.new('1', (oled.width, oled.height))
+            draw = ImageDraw.Draw(image)
+            font = ImageFont.load_default()
+            draw.text((0, 0), f"IP: {ip_address}", font=font, fill=255)
+            oled.image(image)
             oled.show()
 
         except Exception as e:

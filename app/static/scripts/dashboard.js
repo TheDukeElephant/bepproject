@@ -139,9 +139,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update Temperature values and chart
         temperatures.forEach((temp, index) => {
-            const tempValue = typeof temp === 'number' ? temp : 9.0; // Fallback to 9°C if invalid
+            const tempValue = typeof temp === 'number' ? temp : 22.0; // Fallback to 22°C if invalid
             document.getElementById(`temp${index + 1}`).textContent = `${tempValue} °C`;
-            updateChart(tempChart, now, tempValue);
+            updateChart(tempChart, now, tempValue, index);
         });
 
         // Update Humidity value and chart

@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const minTemp = Math.min(...chart.data.datasets.flatMap(dataset => dataset.data));
             const maxTemp = Math.max(...chart.data.datasets.flatMap(dataset => dataset.data));
             chart.options.scales.y.min = Math.min(13, minTemp);
-            chart.options.scales.y.max = Math.max(21, maxTemp);
+            chart.options.scales.y.max = Math.max(16, maxTemp);
         }
 
         chart.update();

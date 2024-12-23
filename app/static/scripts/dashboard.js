@@ -81,9 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     data: [],
                     borderColor: 'rgba(255, 159, 64, 1)',
                     backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                }
+                },
                 {
-                    label: 'Temperature 6, AVG Chamber (°C)',
+                    label: 'AVG Chamber (°C)',
                     data: [],
                     borderColor: 'rgb(124, 249, 110)',
                     backgroundColor: 'rgba(143, 251, 113, 0.2)',

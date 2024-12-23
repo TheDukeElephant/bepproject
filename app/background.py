@@ -128,7 +128,7 @@ def background_sensor_read():
                 'timestamp': int(time.time()),
                 'co2': co2_value,
                 'o2': o2_value,
-                'temperatures': [round(temp, 2) for temp in temperatures],
+                'temperatures': [round(temp, 2) for temp in temperatures] + [round((temperatures[2] + temperatures[3]) / 2, 2)],
                 'humidity': round(humidity, 2)
             }
 

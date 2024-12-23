@@ -139,9 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update Temperature values and chart
         temperatures.forEach((temp, index) => {
-            const tempValue = typeof temp === 'number' ? temp : 22.0; // Fallback to 22°C if invalid
-            document.getElementById(`temp${index + 1}`).textContent = `${tempValue} °C`;
-            updateChart(tempChart, now, tempValue, index);
+            let tempDisplayValue;
+            if (typeof temp === 'number' && temp <= 950) {
+                tempDisplayValue = `${temp} °C`;
+                updateChart(tempChart, now, temp, index);
+            } else {
+                tempDisplayValue = 'Not connected';
+            }
+            document.getElementById(`temp${index + 1}`).textContent = tempDisplayValue;
         });
 
         // Update Humidity value and chart

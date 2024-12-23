@@ -171,27 +171,30 @@ document.addEventListener("DOMContentLoaded", () => {
      * @param {Chart} chart - The chart to update.
      * @param {string} label - The label for the new data point.
      * @param {number} value - The value for the new data point.
+     * @param {number} [datasetIndex=0] - The index of the dataset to update.
      */
     function updateChart(chart, label, value, datasetIndex = 0) {
         if (chart.data.labels.length === 0 || chart.data.labels[chart.data.labels.length - 1] !== label) {
             chart.data.labels.push(label);
         }
         chart.data.datasets[datasetIndex].data.push(value);
-    
+
         if (chart.data.datasets[datasetIndex].data.length > 10) {
             chart.data.datasets[datasetIndex].data.shift();
         }
-    
+
         if (chart.data.labels.length > 10) {
             chart.data.labels.shift();
         }
-    
-        // Dynamically adjust y-axis range
-        const minTemp = Math.min(...chart.data.datasets.flatMap(dataset => dataset.data));
-        const maxTemp = Math.max(...chart.data.datasets.flatMap(dataset => dataset.data));
-        chart.options.scales.y.min = Math.min(13, minTemp);
-        chart.options.scales.y.max = Math.max(21, maxTemp);
-    
+
+        // Dynamically adjust y-axis range only for the temperature chart
+        if (chart === tempChart) {
+            const minTemp = Math.min(...chart.data.datasets.flatMap(dataset => dataset.data));
+            const maxTemp = Math.max(...chart.data.datasets.flatMap(dataset => dataset.data));
+            chart.options.scales.y.min = Math.min(13, minTemp);
+            chart.options.scales.y.max = Math.max(21, maxTemp);
+        }
+
         chart.update();
     }
 

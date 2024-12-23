@@ -31,7 +31,10 @@ cs_pins = [board.D5, board.D6, board.D13, board.D19, board.D26]
 sensors = [adafruit_max31865.MAX31865(spi, digitalio.DigitalInOut(cs), rtd_nominal=100.0, ref_resistor=430.0) for cs in cs_pins]
 
 # Initialize AM2302 (DHT22) humidity sensor
-dht_device = Adafruit_DHT.DHT22(board.D4)
+#dht_device = Adafruit_DHT.DHT22(board.D4)
+# Initialize AM2302 (DHT22) humidity sensor
+DHT_SENSOR = Adafruit_DHT.DHT22
+DHT_PIN = 4  # GPIO pin number
 
 # Initialize oxygen sensor (MIX8410)
 oxygen_sensor_pin = digitalio.DigitalInOut(board.D14)
@@ -63,9 +66,19 @@ def read_temperature(sensor):
         print(f"Error reading temperature from MAX31865: {e}")
         return FALLBACK_TEMPERATURE
 
+# def read_humidity():
+#     try:
+#         humidity, _ = Adafruit_DHT.read_retry(dht_device, board.D7)
+#         if humidity is not None:
+#             return humidity
+#         else:
+#             raise ValueError("Failed to read humidity")
+#     except Exception as e:
+#         print(f"Error reading humidity from AM2302: {e}")
+#         return FALLBACK_HUMIDITY
 def read_humidity():
     try:
-        humidity, _ = Adafruit_DHT.read_retry(dht_device, board.D7)
+        humidity, _ = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
         if humidity is not None:
             return humidity
         else:

@@ -168,12 +168,17 @@ document.addEventListener("DOMContentLoaded", () => {
      * @param {number} value - The value for the new data point.
      */
     function updateChart(chart, label, value, datasetIndex = 0) {
-        chart.data.labels.push(label);
+        if (chart.data.labels.length === 0 || chart.data.labels[chart.data.labels.length - 1] !== label) {
+            chart.data.labels.push(label);
+        }
         chart.data.datasets[datasetIndex].data.push(value);
+    
+        if (chart.data.datasets[datasetIndex].data.length > 10) {
+            chart.data.datasets[datasetIndex].data.shift();
+        }
     
         if (chart.data.labels.length > 10) {
             chart.data.labels.shift();
-            chart.data.datasets.forEach(dataset => dataset.data.shift());
         }
     
         chart.update();

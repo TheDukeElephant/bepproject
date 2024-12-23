@@ -133,15 +133,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const now = new Date().toLocaleTimeString();
 
         // Update CO₂ value and chart
-        const co2Value = typeof co2 === 'number' ? co2 : 0.04; // Fallback to 400 ppm if invalid
-        document.getElementById('co2').textContent = `${co2Value} %`;
-        updateChart(co2Chart, now, co2Value);
-        updateCO2YAxis(co2Value); // Update Y-axis based on the latest CO2 value
+        let co2DisplayValue;
+        if (typeof co2 === 'number' && co2 <= 39) {
+            co2DisplayValue = `${co2} %`;
+            updateChart(co2Chart, now, co2);
+        } else {
+            co2DisplayValue = 'Not connected';
+        }
+        document.getElementById('co2').textContent = co2DisplayValue;
+        updateCO2YAxis(co2); // Update Y-axis based on the latest CO2 value
 
         // Update O₂ value and chart
-        const o2Value = typeof o2 === 'number' ? o2 : 21; // Fallback to 21% if invalid
-        document.getElementById('o2').textContent = `${o2Value} %`;
-        updateChart(o2Chart, now, o2Value);
+        let o2DisplayValue;
+        if (typeof o2 === 'number' && o2 <= 22) {
+            o2DisplayValue = `${o2} %`;
+            updateChart(o2Chart, now, o2);
+        } else {
+            o2DisplayValue = 'Not connected';
+        }
+        document.getElementById('o2').textContent = o2DisplayValue;
 
         // Update Temperature values and chart
         temperatures.forEach((temp, index) => {
@@ -156,11 +166,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Update Humidity value and chart
-        const humidityValue = typeof humidity === 'number' ? humidity : 50.0; // Fallback to 50% if invalid
-        document.getElementById('humidity').textContent = `${humidityValue} %`;
-        updateChart(humidityChart, now, humidityValue);
-        // Acknowledge update back to server
-        if (callback) callback('Dashboard update received and processed.');
+        let humidityDisplayValue;
+        if (typeof humidity === 'number' && humidity <= 100) {
+            humidityDisplayValue = `${humidity} %`;
+            updateChart(humidityChart, now, humidity);
+        } else {
+            humidityDisplayValue = 'Not connected';
+        }
+        document.getElementById('humidity').textContent = humidityDisplayValue;
+
     });
 
     socket.on('connect', () => {

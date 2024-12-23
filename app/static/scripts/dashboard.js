@@ -88,9 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
             responsive: true,
             scales: {
                 y: {
-                    beginAtZero: true,
-                    suggestedMin: 13,
-                    suggestedMax: 21
+                    min: 13,
+                    max: 21
                 }
             }
         }
@@ -186,6 +185,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (chart.data.labels.length > 10) {
             chart.data.labels.shift();
         }
+    
+        // Dynamically adjust y-axis range
+        const minTemp = Math.min(...chart.data.datasets.flatMap(dataset => dataset.data));
+        const maxTemp = Math.max(...chart.data.datasets.flatMap(dataset => dataset.data));
+        chart.options.scales.y.min = Math.min(13, minTemp);
+        chart.options.scales.y.max = Math.max(21, maxTemp);
     
         chart.update();
     }

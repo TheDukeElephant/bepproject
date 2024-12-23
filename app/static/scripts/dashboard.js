@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         lastTimestamp = data.timestamp;
 
-        const { co2, o2, temperature, humidity } = data;
+        const { co2, o2, temperatures, humidity } = data;
 
         const now = new Date().toLocaleTimeString();
 
@@ -103,16 +103,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('o2').textContent = `${o2Value} %`;
         updateChart(o2Chart, now, o2Value);
 
-        // Update Temperature value and chart
-        const tempValue = typeof temperature === 'number' ? temperature : 22.0; // Fallback to 22°C if invalid
-        document.getElementById('temperature').textContent = `${tempValue} °C`;
-        updateChart(tempChart, now, tempValue);
+        // Update Temperature values and chart
+        temperatures.forEach((temp, index) => {
+            const tempValue = typeof temp === 'number' ? temp : 9.0; // Fallback to 9°C if invalid
+            document.getElementById(`temp${index + 1}`).textContent = `${tempValue} °C`;
+            updateChart(tempChart, now, tempValue);
+        });
 
         // Update Humidity value and chart
         const humidityValue = typeof humidity === 'number' ? humidity : 50.0; // Fallback to 50% if invalid
         document.getElementById('humidity').textContent = `${humidityValue} %`;
         updateChart(humidityChart, now, humidityValue);
-
         // Acknowledge update back to server
         if (callback) callback('Dashboard update received and processed.');
     });

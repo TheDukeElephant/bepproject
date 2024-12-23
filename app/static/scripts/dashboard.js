@@ -89,7 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: 50
+                    suggestedMin: 13,
+                    suggestedMax: 21
                 }
             }
         }

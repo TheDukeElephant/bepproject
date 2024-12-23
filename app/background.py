@@ -26,12 +26,10 @@ i2c = busio.I2C(board.SCL, board.SDA)
 oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
 
 # Initialize SPI bus for MAX31865 sensors
-spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
 cs_pins = [board.D5, board.D6, board.D13, board.D19, board.D26]
 sensors = [adafruit_max31865.MAX31865(spi, digitalio.DigitalInOut(cs), rtd_nominal=100.0, ref_resistor=430.0) for cs in cs_pins]
 
-# Initialize AM2302 (DHT22) humidity sensor
-#dht_device = Adafruit_DHT.DHT22(board.D4)
 # Initialize AM2302 (DHT22) humidity sensor
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  # GPIO pin number
@@ -66,16 +64,6 @@ def read_temperature(sensor):
         print(f"Error reading temperature from MAX31865: {e}")
         return FALLBACK_TEMPERATURE
 
-# def read_humidity():
-#     try:
-#         humidity, _ = Adafruit_DHT.read_retry(dht_device, board.D7)
-#         if humidity is not None:
-#             return humidity
-#         else:
-#             raise ValueError("Failed to read humidity")
-#     except Exception as e:
-#         print(f"Error reading humidity from AM2302: {e}")
-#         return FALLBACK_HUMIDITY
 def read_humidity():
     try:
         humidity, _ = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
@@ -152,7 +140,7 @@ def background_sensor_read():
             # Display IP address on OLED
             ip_address = get_ip_address()
             oled.fill(0)
-            oled.text(f"IP: {ip_address}", 0, 0, 1)
+            oled.text(f"IP: {ip_address}", 0, 0, 1)  # Use built-in font
             oled.show()
 
         except Exception as e:

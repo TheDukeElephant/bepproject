@@ -53,31 +53,31 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: [],
             datasets: [
                 {
-                    label: 'Temperature 1 (°C)',
+                    label: 'Top ITO (°C)',
                     data: [],
                     borderColor: 'rgba(255, 99, 132, 1)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 },
                 {
-                    label: 'Temperature 2 (°C)',
+                    label: 'Bottom ITO (°C)',
                     data: [],
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 },
                 {
-                    label: 'Temperature 3 (°C)',
+                    label: 'Middle Chamber (°C)',
                     data: [],
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 },
                 {
-                    label: 'Temperature 4 (°C)',
+                    label: 'Middle Chamber 2 (°C)',
                     data: [],
                     borderColor: 'rgba(153, 102, 255, 1)',
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
                 },
                 {
-                    label: 'Temperature 5 (°C)',
+                    label: 'Inside Well-plate (°C)',
                     data: [],
                     borderColor: 'rgba(255, 159, 64, 1)',
                     backgroundColor: 'rgba(255, 159, 64, 0.2)',
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
             scales: {
                 y: {
                     min: 13,
-                    max: 21
+                    max: 15
                 }
             }
         }

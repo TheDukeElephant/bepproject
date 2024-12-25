@@ -144,7 +144,8 @@ def background_sensor_read():
             image = Image.new('1', (oled.width, oled.height))
             draw = ImageDraw.Draw(image)
             font = ImageFont.load_default()
-
+            
+            #display alles onder elkaar
             draw.text((0, 0), f"IP: {ip_address}", font=font, fill=255)
             draw.text((0, 10), f"Temp: {sensor_data['temperatures'][5]} C", font=font, fill=255)
             draw.text((0, 20), f"Humidity: {sensor_data['humidity']} %", font=font, fill=255)

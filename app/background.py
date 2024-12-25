@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 # Default fallback values
 FALLBACK_CO2 = 40  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 23  # Example fallback O2 level in %
-FALLBACK_TEMPERATURE = 10  # Example fallback temperature in °C
+FALLBACK_TEMPERATURE = 960  # Example fallback temperature in °C
 FALLBACK_HUMIDITY = 101.0  # Example fallback humidity in %
 
 # Buffer to store recent data for reconnections

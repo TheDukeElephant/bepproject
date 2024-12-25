@@ -10,6 +10,7 @@ import busio
 import digitalio
 import adafruit_max31865
 import adafruit_ssd1306  
+import subprocess
 from collections import deque
 from PIL import Image, ImageDraw, ImageFont
 
@@ -58,6 +59,18 @@ def get_ip_address():
         s.close()
     return ip_address
 
+def get_wifi_ssid():
+    try:
+        result = subprocess.run(['iwgetid', '-r'], capture_output=True, text=True)
+        ssid = result.stdout.strip()
+        if ssid:
+            return ssid
+        else:
+            return "N/A"
+    except Exception as e:
+        print(f"Error getting Wi-Fi SSID: {e}")
+        return "N/A"
+    
 def read_temperature(sensor):
     try:
         temperature = sensor.temperature
@@ -141,17 +154,21 @@ def background_sensor_read():
 
              # Display IP address, temperature, humidity, O₂, and CO₂ on OLED using pillow library
             ip_address = get_ip_address()
+            wifi_ssid = get_wifi_ssid()
             image = Image.new('1', (oled.width, oled.height))
             draw = ImageDraw.Draw(image)
             font = ImageFont.load_default()
             
             #display alles onder elkaar
-            draw.text((0, 0), f"IP: {ip_address}", font=font, fill=255)
-            draw.text((0, 10), f"Temp: {sensor_data['temperatures'][5]} C", font=font, fill=255)
-            draw.text((0, 20), f"Humidity: {sensor_data['humidity']} %", font=font, fill=255)
-            draw.text((0, 30), f"O2: {sensor_data['o2']} %", font=font, fill=255)
-            draw.text((0, 40), f"CO2: {sensor_data['co2']} %", font=font, fill=255)
-
+            
+            # Display information on the OLED screen
+            draw.text((0, 0), f"SSID: {wifi_ssid}", font=font, fill=255)
+            draw.text((0, 10), f"IP: {ip_address}", font=font, fill=255)
+            draw.text((0, 20), f"Temp: {sensor_data['temperatures'][5]} C", font=font, fill=255)
+            draw.text((0, 30), f"Humidity: {sensor_data['humidity']} %", font=font, fill=255)
+            draw.text((0, 40), f"O2: {sensor_data['o2']} %", font=font, fill=255)
+            draw.text((0, 50), f"CO2: {sensor_data['co2']} %", font=font, fill=255)
+            
             oled.image(image)
             oled.show()
 

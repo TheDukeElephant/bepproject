@@ -14,7 +14,7 @@ from collections import deque
 from PIL import Image, ImageDraw, ImageFont
 
 
-# Default fallback values
+# Default fallback values which will all be filtered out in js
 FALLBACK_CO2 = 40  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 23  # Example fallback O2 level in %
 FALLBACK_TEMPERATURE = 960  # Example fallback temperature in °C

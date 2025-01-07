@@ -18,14 +18,17 @@ device_pins = {
     'humidifier': 27,          # GPIO 27: Relay 3 for humidifier
 
     # Motor driver connections for pump
+    'pump': 20,
     'pump-ena': 20,            # GPIO 20: ENA for pump (PWM)
     'pump-in1': 21,            # GPIO 21: IN1 for pump (forward direction)
     'pump-in2': 18,            # GPIO 18: IN2 for pump (reverse direction, keep LOW for forward)
 
     # Motor driver connections for ITO heating elements
+    'ito-top': 22,
     'ito-top-ena': 22,         # GPIO 22: ENA for ITO top (PWM)
     'ito-top-in1': 23,         # GPIO 23: IN1 for ITO top
     'ito-top-in2': 24,         # GPIO 24: IN2 for ITO top
+    'ito-bottom': 16,
     'ito-bottom-ena': 16,      # GPIO 16: ENA for ITO bottom (PWM)
     'ito-bottom-in3': 25,      # GPIO 25: IN3 for ITO bottom
     'ito-bottom-in4': 12       # GPIO 12: IN4 for ITO bottom

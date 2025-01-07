@@ -20,6 +20,57 @@ function toggleDevice(deviceId) {
         console.error('Error:', error);
     });
 }
+
+// Send the slider value to the server
+function updateDeviceSpeed(deviceId, speed) {
+    fetch(`/set-device-speed`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ device: deviceId, speed: speed }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// Send the slider value to the server
+function updateDeviceSpeed(deviceId, speed) {
+    fetch(`/set-device-speed`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ device: deviceId, speed: speed }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// Attach event listeners to sliders
+document.getElementById('setpumpspeed').addEventListener('input', function () {
+    updateDeviceSpeed('pump', this.value);
+});
+
+document.getElementById('settopito').addEventListener('input', function () {
+    updateDeviceSpeed('ito-top', this.value);
+});
+
+document.getElementById('setbottomito').addEventListener('input', function () {
+    updateDeviceSpeed('ito-bottom', this.value);
+});
+
+
 // Adjust the value of the input field by a specified step
 // Adjust the value of the input field by a specified step
 function adjustValue(id, step) {

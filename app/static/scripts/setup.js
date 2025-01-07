@@ -1,8 +1,8 @@
 // Toggle the state of a relay or device
 function toggleDevice(deviceId) {
     const button = document.getElementById(`${deviceId}-toggle`);
-    const isOn = button.classList.toggle('on');
-    button.textContent = isOn ? 'On' : 'Off';
+    const isOn = button.classList.toggle('on'); // Toggle the button's 'on' state
+    button.textContent = isOn ? 'On' : 'Off'; // Update the button's label
 
     // Send the toggle state to the server
     fetch(`/toggle-device`, {
@@ -56,14 +56,14 @@ document.querySelectorAll('.slider').forEach(slider => {
     slider.addEventListener('input', function () {
         // Map slider IDs to backend device names
         const sliderIdToDeviceMap = {
-            'setpumpspeed': 'pump-ena',
-            'settopito': 'ito-top-ena',
-            'setbottomito': 'ito-bottom-ena'
+            'setpumpspeed': 'pump-ena',      // Map pump speed slider
+            'settopito': 'ito-top-ena',     // Map ITO top speed slider
+            'setbottomito': 'ito-bottom-ena' // Map ITO bottom speed slider
         };
 
-        const deviceId = sliderIdToDeviceMap[this.id];
+        const deviceId = sliderIdToDeviceMap[this.id]; // Get the backend device name
         if (deviceId) {
-            updateDeviceSpeed(deviceId, this.value);
+            updateDeviceSpeed(deviceId, this.value); // Send the speed update to the server
         } else {
             console.error(`No mapping found for slider ID: ${this.id}`);
         }

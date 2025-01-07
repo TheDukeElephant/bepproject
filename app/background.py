@@ -24,9 +24,16 @@ FALLBACK_HUMIDITY = 101.0  # Example fallback humidity in %
 # Buffer to store recent data for reconnections
 data_buffer = deque(maxlen=10)  # Store up to the last 10 updates
 
-# Initialize I2C bus for OLED display
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+# Initialize I2C bus and OLED display
+i2c = None
+oled = None
+try:
+    i2c = busio.I2C(board.SCL, board.SDA)
+    oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+    print("OLED display initialized successfully.")
+except Exception as e:
+    print(f"Error initializing OLED display: {e}")
+    oled = None
 
 # Initialize SPI bus for MAX31865 sensors
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
@@ -152,25 +159,24 @@ def background_sensor_read():
             socketio.emit('update_dashboard', sensor_data, to=None)
             print("Emitting data successfully.")
 
-             # Display IP address, temperature, humidity, O₂, and CO₂ on OLED using pillow library
-            ip_address = get_ip_address()
-            wifi_ssid = get_wifi_ssid()
-            image = Image.new('1', (oled.width, oled.height))
-            draw = ImageDraw.Draw(image)
-            font = ImageFont.load_default()
-            
-            #display alles onder elkaar
-            
-            # Display information on the OLED screen
-            draw.text((0, 0), f"SSID: {wifi_ssid}", font=font, fill=255)
-            draw.text((0, 10), f"IP: {ip_address}", font=font, fill=255)
-            draw.text((0, 20), f"Temp: {sensor_data['temperatures'][5]} C", font=font, fill=255)
-            draw.text((0, 30), f"Humidity: {sensor_data['humidity']} %", font=font, fill=255)
-            draw.text((0, 40), f"O2: {sensor_data['o2']} %", font=font, fill=255)
-            draw.text((0, 50), f"CO2: {sensor_data['co2']} %", font=font, fill=255)
-            
-            oled.image(image)
-            oled.show()
+            # Display data on the OLED if available
+            if oled:
+                ip_address = get_ip_address()
+                wifi_ssid = get_wifi_ssid()
+                image = Image.new('1', (oled.width, oled.height))
+                draw = ImageDraw.Draw(image)
+                font = ImageFont.load_default()
+                
+                # Display information on the OLED screen
+                draw.text((0, 0), f"SSID: {wifi_ssid}", font=font, fill=255)
+                draw.text((0, 10), f"IP: {ip_address}", font=font, fill=255)
+                draw.text((0, 20), f"Temp: {sensor_data['temperatures'][5]} C", font=font, fill=255)
+                draw.text((0, 30), f"Humidity: {sensor_data['humidity']} %", font=font, fill=255)
+                draw.text((0, 40), f"O2: {sensor_data['o2']} %", font=font, fill=255)
+                draw.text((0, 50), f"CO2: {sensor_data['co2']} %", font=font, fill=255)
+                
+                oled.image(image)
+                oled.show()
 
         except Exception as e:
             print(f"Error reading sensors: {e}")

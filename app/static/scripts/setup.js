@@ -54,8 +54,19 @@ function updateDeviceSpeed(deviceId, speed) {
 // Attach event listeners to sliders for real-time updates
 document.querySelectorAll('.slider').forEach(slider => {
     slider.addEventListener('input', function () {
-        const deviceId = this.id.replace('set', '').toLowerCase(); // Extract device ID from slider ID
-        updateDeviceSpeed(deviceId, this.value);
+        // Map slider IDs to backend device names
+        const sliderIdToDeviceMap = {
+            'setpumpspeed': 'pump-ena',
+            'settopito': 'ito-top-ena',
+            'setbottomito': 'ito-bottom-ena'
+        };
+
+        const deviceId = sliderIdToDeviceMap[this.id];
+        if (deviceId) {
+            updateDeviceSpeed(deviceId, this.value);
+        } else {
+            console.error(`No mapping found for slider ID: ${this.id}`);
+        }
     });
 });
 

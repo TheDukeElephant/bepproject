@@ -30,7 +30,7 @@ device_pins = {
 }
 
 # Set all pins as output and initialize
-for pin, name in device_pins.items():
+for name, pin in device_pins.items():
     GPIO.setup(pin, GPIO.OUT)
     if "solenoid" in name or "humidifier" in name:
         # Set relays (assume active LOW) to HIGH to ensure they're OFF

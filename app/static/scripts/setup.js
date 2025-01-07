@@ -4,6 +4,8 @@ function toggleDevice(deviceId) {
     const isOn = button.classList.toggle('on'); // Toggle the button's 'on' state
     button.textContent = isOn ? 'On' : 'Off'; // Update the button's label
 
+    console.log(`Toggling device: ${deviceId}, State: ${isOn ? 'on' : 'off'}`); // Debugging log
+
     // Send the toggle state to the server
     fetch(`/toggle-device`, {
         method: 'POST',
@@ -26,6 +28,7 @@ function toggleDevice(deviceId) {
             alert(`An error occurred: ${error.message}`);
         });
 }
+
 
 // Send the slider value to the server for speed control
 function updateDeviceSpeed(deviceId, speed) {

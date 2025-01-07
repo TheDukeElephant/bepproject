@@ -65,7 +65,11 @@ def toggle_device():
         device = data.get('device')
         state = data.get('state')
 
+        # Debugging logs
+        print(f"Received toggle request: Device={device}, State={state}")
+
         if device not in device_pins:
+            print(f"Invalid device name received: {device}")  # Log the invalid device
             return {'error': f"Invalid device: {device}"}, 400
 
         # Get the pin number for the device
@@ -86,8 +90,10 @@ def toggle_device():
             pin = device_pins[device]
             GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
 
+        print(f"Device {device} toggled to {'ON' if state == 'on' else 'OFF'}")  # Debugging log
         return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:
+        print(f"Error toggling device: {e}")  # Debugging log for exceptions
         return {'error': str(e)}, 500
 
 

@@ -32,7 +32,8 @@ device_pins = {
 # Set all pins as output and initialize
 for name, pin in device_pins.items():
     GPIO.setup(pin, GPIO.OUT)
-    if "solenoid" in name or "humidifier" in name:
+    # or "humidifier" in name (volgensmij is de relay andere werking dan de anderen)
+    if "solenoid" in name:
         # Set relays (assume active LOW) to HIGH to ensure they're OFF
         GPIO.output(pin, GPIO.HIGH)
     else:

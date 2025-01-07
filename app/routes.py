@@ -12,37 +12,33 @@ GPIO.setwarnings(False)
 
 # Define device pin mappings
 device_pins = {
-    # Relays (Assume active LOW)
+    # Relays
     'co2-solenoid': 4,         # GPIO 4: Relay 1 for CO2 solenoid
     'argon-solenoid': 17,      # GPIO 17: Relay 2 for Argon solenoid
     'humidifier': 27,          # GPIO 27: Relay 3 for humidifier
 
-    # Motor driver connections
+    # Motor driver connections for pump
+    'pump-ena': 20,            # GPIO 20: ENA for pump (PWM)
+    'pump-in1': 21,            # GPIO 21: IN1 for pump (forward direction)
+    'pump-in2': 18,            # GPIO 18: IN2 for pump (reverse direction, keep LOW for forward)
+
+    # Motor driver connections for ITO heating elements
     'ito-top-ena': 22,         # GPIO 22: ENA for ITO top (PWM)
     'ito-top-in1': 23,         # GPIO 23: IN1 for ITO top
     'ito-top-in2': 24,         # GPIO 24: IN2 for ITO top
+    'ito-bottom-ena': 16,      # GPIO 16: ENA for ITO bottom (PWM)
     'ito-bottom-in3': 25,      # GPIO 25: IN3 for ITO bottom
-    'ito-bottom-in4': 12,      # GPIO 12: IN4 for ITO bottom
-    'ito-bottom-enb': 16,      # GPIO 16: ENB for ITO bottom (PWM)
-    'pump-ena': 20,            # GPIO 20: ENA for pump (PWM)
-    'pump-in1': 21,            # GPIO 21: IN1 for pump
-    'pump-in2': 18             # GPIO 18: IN2 for pump
+    'ito-bottom-in4': 12       # GPIO 12: IN4 for ITO bottom
 }
 
-# Set all pins as output and initialize
-for name, pin in device_pins.items():
+# Set all pins as output and initialize to OFF
+for pin in device_pins.values():
     GPIO.setup(pin, GPIO.OUT)
-    # or "humidifier" in name (volgensmij is de relay andere werking dan de anderen)
-    if "solenoid" in name:
-        # Set relays (assume active LOW) to HIGH to ensure they're OFF
-        GPIO.output(pin, GPIO.HIGH)
-    else:
-        # Default other pins to LOW
-        GPIO.output(pin, GPIO.LOW)
+    GPIO.output(pin, GPIO.LOW)
 
 # Store PWM instances
 pwm_instances = {}
-pwm_pins = ['ito-top-ena', 'ito-bottom-enb', 'pump-ena']  # Pins requiring PWM
+pwm_pins = ['pump-ena', 'ito-top-ena', 'ito-bottom-ena']  # Pins requiring PWM
 for pwm_device in pwm_pins:
     pin = device_pins[pwm_device]
     pwm_instances[pwm_device] = GPIO.PWM(pin, 100)  # 100 Hz frequency
@@ -65,7 +61,6 @@ atexit.register(cleanup_gpio)
 def toggle_device():
     """Toggle a relay or GPIO pin."""
     try:
-        # Parse the request data
         data = request.json
         device = data.get('device')
         state = data.get('state')
@@ -74,13 +69,22 @@ def toggle_device():
             return {'error': f"Invalid device: {device}"}, 400
 
         # Get the pin number for the device
-        pin = device_pins[device]
-
-        # Set the GPIO pin based on the state
-        if state == 'on':
-            GPIO.output(pin, GPIO.LOW)  # Active LOW: LOW = ON
+        if device == 'pump':
+            # Handle the pump's motor driver
+            GPIO.output(device_pins['pump-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
+            GPIO.output(device_pins['pump-in2'], GPIO.LOW)  # Keep IN2 LOW for forward
+        elif device == 'ito-top':
+            # Handle ITO top motor driver
+            GPIO.output(device_pins['ito-top-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
+            GPIO.output(device_pins['ito-top-in2'], GPIO.LOW)  # Keep IN2 LOW for forward
+        elif device == 'ito-bottom':
+            # Handle ITO bottom motor driver
+            GPIO.output(device_pins['ito-bottom-in3'], GPIO.HIGH if state == 'on' else GPIO.LOW)
+            GPIO.output(device_pins['ito-bottom-in4'], GPIO.LOW)  # Keep IN4 LOW for forward
         else:
-            GPIO.output(pin, GPIO.HIGH)  # Active LOW: HIGH = OFF
+            # Handle simple relay devices
+            pin = device_pins[device]
+            GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
 
         return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:
@@ -92,7 +96,6 @@ def toggle_device():
 def set_device_speed():
     """Set the speed for a PWM device."""
     try:
-        # Parse the request data
         data = request.json
         device = data.get('device')
         speed = int(data.get('speed'))  # Speed should be an integer 0-100

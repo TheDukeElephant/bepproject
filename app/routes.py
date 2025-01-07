@@ -12,7 +12,7 @@ GPIO.setwarnings(False)
 
 # Define device pin mappings
 device_pins = {
-    # Relays
+    # Relays (Assume active LOW)
     'co2-solenoid': 4,         # GPIO 4: Relay 1 for CO2 solenoid
     'argon-solenoid': 17,      # GPIO 17: Relay 2 for Argon solenoid
     'humidifier': 27,          # GPIO 27: Relay 3 for humidifier
@@ -29,10 +29,15 @@ device_pins = {
     'pump-in2': 18             # GPIO 18: IN2 for pump
 }
 
-# Set all pins as output and initialize to OFF
-for pin in device_pins.values():
+# Set all pins as output and initialize
+for pin, name in device_pins.items():
     GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, GPIO.LOW)
+    if "solenoid" in name or "humidifier" in name:
+        # Set relays (assume active LOW) to HIGH to ensure they're OFF
+        GPIO.output(pin, GPIO.HIGH)
+    else:
+        # Default other pins to LOW
+        GPIO.output(pin, GPIO.LOW)
 
 # Store PWM instances
 pwm_instances = {}
@@ -69,8 +74,12 @@ def toggle_device():
 
         # Get the pin number for the device
         pin = device_pins[device]
+
         # Set the GPIO pin based on the state
-        GPIO.output(pin, GPIO.HIGH if state == 'on' else GPIO.LOW)
+        if state == 'on':
+            GPIO.output(pin, GPIO.LOW)  # Active LOW: LOW = ON
+        else:
+            GPIO.output(pin, GPIO.HIGH)  # Active LOW: HIGH = OFF
 
         return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:

@@ -45,8 +45,8 @@ DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  # GPIO pin number
 
 # Initialize oxygen sensor (MIX8410)
-oxygen_sensor_pin = digitalio.DigitalInOut(board.D14)
-oxygen_sensor_pin.direction = digitalio.Direction.INPUT
+#oxygen_sensor_pin = digitalio.DigitalInOut(board.D14)
+#oxygen_sensor_pin.direction = digitalio.Direction.INPUT
 
 # Initialize CO2 sensors
 #co2_sensor_pins = [digitalio.DigitalInOut(pin) for pin in [board.D15, board.D8]]

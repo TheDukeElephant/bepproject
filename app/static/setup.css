@@ -82,17 +82,35 @@ button.decrement-button {
 .controls-container {
     margin-top: 20px;
 }
+/* Styling for slider value display */
+.slider-value {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 1em;
+    color: #333;
+}
 
 .control {
     margin-bottom: 10px;
 }
-.toggle-button {
-    padding: 10px 20px;
-    background-color: #ccc;
-    border: none;
-    cursor: pointer;
-    margin-left: auto; /* Align to the right */
+/* Align slider and toggle button horizontally */
+.slider-control-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px; /* Add space between slider and button */
 }
+
+/* Ensure slider-container and toggle-button fit nicely */
+.slidecontainer {
+    flex: 1; /* Slider takes available space */
+}
+
+.toggle-button {
+    flex-shrink: 0; /* Prevent button from shrinking */
+    margin-left: 10px; /* Optional for spacing */
+}
+
 
 .toggle-button.on {
     background-color: #4CAF50;

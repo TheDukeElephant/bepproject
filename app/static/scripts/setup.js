@@ -53,6 +53,32 @@ function updateDeviceSpeed(deviceId, speed) {
             alert(`An error occurred: ${error.message}`);
         });
 }
+// Function to update slider value display
+function updateSliderValue(sliderId, value) {
+    const valueElement = document.getElementById(`${sliderId}-value`);
+    if (valueElement) {
+        valueElement.textContent = value; // Update the displayed value
+    }
+}
+
+// Attach event listeners to sliders for real-time updates
+document.querySelectorAll('.slider').forEach(slider => {
+    slider.addEventListener('input', function () {
+        // Map slider IDs to backend device names
+        const sliderIdToDeviceMap = {
+            'setpumpspeed': 'pump-ena',      // Map pump speed slider
+            'settopito': 'ito-top-ena',     // Map ITO top speed slider
+            'setbottomito': 'ito-bottom-ena' // Map ITO bottom speed slider
+        };
+
+        const deviceId = sliderIdToDeviceMap[this.id]; // Get the backend device name
+        if (deviceId) {
+            updateDeviceSpeed(deviceId, this.value); // Send the speed update to the server
+        } else {
+            console.error(`No mapping found for slider ID: ${this.id}`);
+        }
+    });
+});
 
 // Attach event listeners to sliders for real-time updates
 document.querySelectorAll('.slider').forEach(slider => {

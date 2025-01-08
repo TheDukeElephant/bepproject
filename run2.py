@@ -12,7 +12,7 @@ while True:
 
         # Send test command to get CO2 data
         ser.write(b'Z 2\r\n')
-        time.sleep(0.1)
+        time.sleep(0.01)
         response = ""
         while ser.in_waiting > 0:
             response += ser.read().decode("utf-8")

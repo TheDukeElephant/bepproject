@@ -13,7 +13,10 @@ while True:
         # Send test command to get CO2 data
         ser.write(b'Z 2\r\n')
         time.sleep(0.1)
-        response = ser.read(100).decode('utf-8').strip()
+        response = ""
+        while ser.in_waiting > 0:
+            response += ser.read().decode("utf-8")
+        response = response.strip()
 
         print(f"Response from CO₂ sensor: {response}")
     except Exception as e:

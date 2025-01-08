@@ -201,5 +201,11 @@ def setup():
     except Exception as e:
         flash(f"Error reading configuration: {e}", "error")
 
-    # Render the setup page with current thresholds and relay states
-    return render_template('setup.html', thresholds=thresholds, relay_states=relay_states)
+    # Pass GPIO states to the template
+    return render_template(
+        'setup.html',
+        thresholds=thresholds,
+        relay_states=relay_states,
+        GPIO_LOW=GPIO.LOW,
+        GPIO_HIGH=GPIO.HIGH
+    )

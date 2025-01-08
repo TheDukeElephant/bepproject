@@ -11,7 +11,7 @@ while True:
         time.sleep(0.1)
 
         # Send test command to get CO2 data
-        ser.write(b'Z 2\r\n')
+        ser.write(b'Z\r\n')
         time.sleep(0.1)
         response = ser.read(100).decode('utf-8').strip()
 

@@ -47,11 +47,14 @@ for device, pin in device_pins.items():
 #for pin in device_pins.values():
 #    GPIO.setup(pin, GPIO.OUT)
 #    GPIO.output(pin, GPIO.LOW)
-# Set all pins as output and initialize relays to OFF (HIGH state)
-for pin, name in device_pins.items():
+# Set all pins as output and initialize them to the appropriate state
+for device, pin in device_pins.items():
+    if not isinstance(pin, int):
+        raise ValueError(f"Pin value for '{device}' must be an integer, but got: {pin} of type {type(pin)}")
+    print(f"Setting up GPIO pin for {device}: {pin}")
     GPIO.setup(pin, GPIO.OUT)
-    if 'relay' in name or 'solenoid' in name or 'humidifier' in name:
-        GPIO.output(pin, GPIO.HIGH)  # OFF state for the relay
+    if 'solenoid' in device or 'humidifier' in device:
+        GPIO.output(pin, GPIO.HIGH)  # Ensure relays are OFF (HIGH is the off state for most relays)
     else:
         GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
 

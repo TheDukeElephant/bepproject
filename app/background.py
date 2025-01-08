@@ -49,9 +49,9 @@ oxygen_sensor_pin = digitalio.DigitalInOut(board.D14)
 oxygen_sensor_pin.direction = digitalio.Direction.INPUT
 
 # Initialize CO2 sensors
-co2_sensor_pins = [digitalio.DigitalInOut(pin) for pin in [board.D15, board.D8]]
-for co2_sensor_pin in co2_sensor_pins:
-    co2_sensor_pin.direction = digitalio.Direction.INPUT
+#co2_sensor_pins = [digitalio.DigitalInOut(pin) for pin in [board.D15, board.D8]]
+#for co2_sensor_pin in co2_sensor_pins:
+#    co2_sensor_pin.direction = digitalio.Direction.INPUT
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

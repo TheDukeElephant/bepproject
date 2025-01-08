@@ -114,27 +114,28 @@ def background_sensor_read():
 
             # CO₂ Sensor Reading
             if ser is not None:
-                try:
-                    ser.write(b'Z 2\r\n')  # Command to the sensor (check your sensor's documentation)
-                    time.sleep(0.1)  # Allow time for response
-                    co2_response = ""
-                    while ser.in_waiting > 0:
-                        co2_response += ser.read().decode("utf-8")
-                    co2_response = co2_response.strip()
+                if ser is not None:
+                    try:
+                        ser.write(b'Z 2\r\n')  # Command to the sensor (check your sensor's documentation)
+                        time.sleep(0.1)  # Allow time for response
+                        co2_response = ""
+                        while ser.in_waiting > 0:
+                            co2_response += ser.read().decode("utf-8")
+                        co2_response = co2_response.strip()
 
-                    # Check if the response starts with "Z" (or whatever your sensor uses for valid data)
-                    if co2_response.startswith("Z") and len(co2_response) > 1:
-                        # If valid response, parse it
-                        co2_value_ppm = int(co2_response[1:].strip()) * 10
-                        co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage and round to 2 decimal places
-                        print("Response from CO₂ sensor went well")
-                    else:
-                        print("Unexpected response from CO₂ sensor: no Z output")
-                        pass
-                except Exception as e:
-                    print(f"Error reading CO₂ sensor: {e}")
-                    # Use fallback values for CO₂ sensor
-                    co2_value = round(FALLBACK_CO2 / 10000, 2)
+                        print(f"Raw CO₂ sensor response: {co2_response}")  # Debugging log
+
+                        # Check if the response starts with "Z"
+                        if co2_response.startswith("Z") and len(co2_response) > 1:
+                            co2_value_ppm = int(co2_response[1:].strip()) * 10
+                            co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage
+                            print("Response from CO₂ sensor went well")
+                        else:
+                            print(f"Unexpected response from CO₂ sensor: {co2_response}")
+                    except Exception as e:
+                        print(f"Error reading CO₂ sensor: {e}")
+                        co2_value = round(FALLBACK_CO2 / 10000, 2)
+
 
             # Prepare sensor data to emit
             sensor_data = {

@@ -35,9 +35,16 @@ device_pins = {
 }
 
 # Set all pins as output and initialize to OFF
-for pin in device_pins.values():
+#for pin in device_pins.values():
+#    GPIO.setup(pin, GPIO.OUT)
+#    GPIO.output(pin, GPIO.LOW)
+# Set all pins as output and initialize relays to OFF (HIGH state)
+for pin, name in device_pins.items():
     GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, GPIO.LOW)
+    if 'relay' in name or 'solenoid' in name or 'humidifier' in name:
+        GPIO.output(pin, GPIO.HIGH)  # OFF state for the relay
+    else:
+        GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
 
 # Store PWM instances
 pwm_instances = {}
@@ -140,6 +147,9 @@ def setup():
     """Handle the setup page for configuring thresholds."""
     config_file_path = 'config.txt'
 
+    # Relay states to synchronize UI with hardware
+    relay_states = {device: GPIO.input(pin) for device, pin in device_pins.items() if 'solenoid' in device or 'humidifier' in device}
+
     if request.method == 'POST':
         # Handle the setup form submission
         co2_threshold = request.form.get('co2_threshold')
@@ -179,5 +189,5 @@ def setup():
     except Exception as e:
         flash(f"Error reading configuration: {e}", "error")
 
-    # Render the setup page with current thresholds
-    return render_template('setup.html', thresholds=thresholds)
+    # Render the setup page with current thresholds and relay states
+    return render_template('setup.html', thresholds=thresholds, relay_states=relay_states)

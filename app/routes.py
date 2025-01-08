@@ -34,6 +34,12 @@ device_pins = {
     'ito-bottom-in4': 12       # GPIO 12: IN4 for ITO bottom
 }
 
+# Validate all pins in device_pins
+for device, pin in device_pins.items():
+    if not isinstance(pin, int):
+        raise ValueError(f"Pin for device '{device}' must be an integer, got {type(pin).__name__}: {pin}")
+
+
 # Set all pins as output and initialize to OFF
 #for pin in device_pins.values():
 #    GPIO.setup(pin, GPIO.OUT)

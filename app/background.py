@@ -168,6 +168,7 @@ def background_sensor_read():
             display_temp = "Not connected" if sensor_data['temperatures'][5] > 950 else f"{sensor_data['temperatures'][5]} C"
             display_humidity = "Not connected" if sensor_data['humidity'] > 100 else f"{sensor_data['humidity']} %"
             display_o2 = "Not connected" if sensor_data['o2'] > 21 else f"{sensor_data['o2']} %"
+            display_co2 = "Not connected" if sensor_data['co2'] > 21 else f"{sensor_data['co2']} %"
 
             
             # Display data on the OLED if available
@@ -181,10 +182,10 @@ def background_sensor_read():
                 # Display information on the OLED screen
                 draw.text((0, 0), f"SSID: {wifi_ssid}", font=font, fill=255)
                 draw.text((0, 10), f"IP: {ip_address}", font=font, fill=255)
-                draw.text((0, 20), f"Temp: {display_temp} C", font=font, fill=255)
+                draw.text((0, 20), f"Temp: {display_temp}", font=font, fill=255)
                 draw.text((0, 30), f"Humidity: {display_humidity}", font=font, fill=255)
                 draw.text((0, 40), f"O2: {display_o2}", font=font, fill=255)
-                draw.text((0, 50), f"CO2: {sensor_data['co2']} %", font=font, fill=255)
+                draw.text((0, 50), f"CO2: {display_co2}", font=font, fill=255)
                 
                 oled.image(image)
                 oled.show()

@@ -84,38 +84,39 @@ def toggle_device():
     """Toggle a relay or GPIO pin."""
     try:
         data = request.json
-        device = data.get('device')
-        state = data.get('state')
+        device = data.get('device')  # Example: 'pump', 'ito-top', 'ito-bottom'
+        state = data.get('state')  # 'on' or 'off'
 
-        # Debugging logs
-        print(f"Received toggle request: Device={device}, State={state}")
-
-        if device not in device_pins:
-            print(f"Invalid device name received: {device}")  # Log the invalid device
+        if device not in device_pins and device not in ['pump', 'ito-top', 'ito-bottom']:
             return {'error': f"Invalid device: {device}"}, 400
 
-        # Get the pin number for the device
         if device == 'pump':
-            # Handle the pump's motor driver
+            # Handle pump motor driver
             GPIO.output(device_pins['pump-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['pump-in2'], GPIO.LOW)  # Keep IN2 LOW for forward
+            GPIO.output(device_pins['pump-in2'], GPIO.LOW)  # Set IN2 LOW for forward direction
+            if state == 'off':
+                pwm_instances['pump-ena'].ChangeDutyCycle(0)  # Stop PWM when toggled off
         elif device == 'ito-top':
             # Handle ITO top motor driver
             GPIO.output(device_pins['ito-top-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['ito-top-in2'], GPIO.LOW)  # Keep IN2 LOW for forward
+            GPIO.output(device_pins['ito-top-in2'], GPIO.LOW)  # Set IN2 LOW for forward direction
+            if state == 'off':
+                pwm_instances['ito-top-ena'].ChangeDutyCycle(0)  # Stop PWM when toggled off
         elif device == 'ito-bottom':
             # Handle ITO bottom motor driver
             GPIO.output(device_pins['ito-bottom-in3'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['ito-bottom-in4'], GPIO.LOW)  # Keep IN4 LOW for forward
+            GPIO.output(device_pins['ito-bottom-in4'], GPIO.LOW)  # Set IN4 LOW for forward direction
+            if state == 'off':
+                pwm_instances['ito-bottom-ena'].ChangeDutyCycle(0)  # Stop PWM when toggled off
         else:
             # Handle simple relay devices
             pin = device_pins[device]
             GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
 
-        print(f"Device {device} toggled to {'ON' if state == 'on' else 'OFF'}")  # Debugging log
+        print(f"Device {device} toggled to {'ON' if state == 'on' else 'OFF'}")
         return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:
-        print(f"Error toggling device: {e}")  # Debugging log for exceptions
+        print(f"Error toggling device: {e}")
         return {'error': str(e)}, 500
 
 

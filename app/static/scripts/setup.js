@@ -30,8 +30,9 @@ function toggleDevice(deviceId) {
 }
 
 
-// Send the slider value to the server for speed control
 function updateDeviceSpeed(deviceId, speed) {
+    console.log(`Updating speed for ${deviceId} to ${speed}%`); // Debugging log
+
     fetch(`/set-device-speed`, {
         method: 'POST',
         headers: {
@@ -42,7 +43,7 @@ function updateDeviceSpeed(deviceId, speed) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                console.log(`Speed for ${deviceId} updated to ${speed}%`);
+                console.log(`Speed for ${deviceId} updated successfully to ${speed}%`);
             } else {
                 console.error(`Error updating speed for ${deviceId}:`, data.error);
                 alert(`Failed to update speed: ${data.error}`);
@@ -53,6 +54,7 @@ function updateDeviceSpeed(deviceId, speed) {
             alert(`An error occurred: ${error.message}`);
         });
 }
+
 // Function to update slider value display
 function updateSliderValue(sliderId, value) {
     const valueElement = document.getElementById(`${sliderId}-value`);
@@ -60,6 +62,7 @@ function updateSliderValue(sliderId, value) {
         valueElement.textContent = value; // Update the displayed value
     }
 }
+
 
 // Attach event listeners to sliders for real-time updates
 document.querySelectorAll('.slider').forEach(slider => {

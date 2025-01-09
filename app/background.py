@@ -5,6 +5,7 @@ from flask_socketio import emit
 from app.serial_port import initialize_serial
 from . import socketio
 import Adafruit_DHT
+import atexit
 import board  
 import busio
 import digitalio
@@ -105,6 +106,31 @@ def read_oxygen():
     except Exception as e:
         print(f"Error reading oxygen from MIX8410: {e}")
         return FALLBACK_O2
+    
+def standby_oled():
+    """Display 'Standby...' on the OLED screen."""
+    if oled:
+        try:
+            # Clear the screen
+            oled.fill(0)
+            oled.show()
+            
+            # Create an image to display 'Standby...'
+            image = Image.new('1', (oled.width, oled.height))
+            draw = ImageDraw.Draw(image)
+            font = ImageFont.load_default()
+            
+            # Display 'Standby...' on the OLED screen
+            draw.text((0, 30), "Standby...", font=font, fill=255)
+            oled.image(image)
+            oled.show()
+            print("OLED set to 'Standby...'")
+        except Exception as e:
+            print(f"Error displaying 'Standby...' on OLED: {e}")
+
+
+#When turning off the python script, display will say: Standby...
+atexit.register(standby_oled)
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART

@@ -14,6 +14,10 @@ import adafruit_ssd1306
 import subprocess
 from collections import deque
 from PIL import Image, ImageDraw, ImageFont
+import csv
+
+# Define the output file path
+OUTPUT_FILE = "sensor_data.csv"
 
 
 # Default fallback values which will all be filtered out in js
@@ -132,6 +136,36 @@ def standby_oled():
 #When turning off the python script, display will say: Standby...
 atexit.register(standby_oled)
 
+# Write a header row to the output file if it doesn't already exist
+def initialize_output_file():
+    try:
+        with open(OUTPUT_FILE, 'a') as file:
+            writer = csv.writer(file)
+            # Write header only if the file is empty
+            if file.tell() == 0:
+                writer.writerow(['timestamp', 'co2', 'o2', 'temperature_1', 'temperature_2',
+                                 'temperature_3', 'temperature_4', 'average_temperature', 'humidity'])
+    except Exception as e:
+        print(f"Error initializing output file: {e}")
+
+# Save sensor data to the output file
+def save_to_file(sensor_data):
+    try:
+        with open(OUTPUT_FILE, 'a') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                sensor_data['timestamp'],
+                sensor_data['co2'],
+                sensor_data['o2'],
+                *sensor_data['temperatures'],
+                sensor_data['humidity']
+            ])
+    except Exception as e:
+        print(f"Error saving to output file: {e}")
+
+# Initialize the output file at the start of the script
+initialize_output_file()
+
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
 
@@ -160,12 +194,13 @@ def background_sensor_read():
                     co2_response = co2_response.strip()
 
                     print(f"Raw CO₂ sensor response: {co2_response}")  # Debugging log
+                    
 
                     # Check if the response starts with "Z"
                     if co2_response.startswith("Z") and len(co2_response) > 1:
                         co2_value_ppm = int(co2_response[1:].strip()) * 10
                         co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage
-                        print("Response from CO₂ sensor went well")
+                        print("Response from CO₂ sansor went well")
                     else:
                         print(f"Unexpected response from CO₂ sensor: {co2_response}")
                 except Exception as e:
@@ -182,7 +217,11 @@ def background_sensor_read():
                 'temperatures': [round(temp, 2) for temp in temperatures] + [round((temperatures[2] + temperatures[3]) / 2, 2)],
                 'humidity': round(humidity, 2)
             }
-
+            
+            # Save the data to the file
+            save_to_file(sensor_data)
+            
+            
             # Store data in buffer
             data_buffer.append(sensor_data)
 
@@ -226,6 +265,7 @@ def background_sensor_read():
                 'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors),
                 'humidity': round(FALLBACK_HUMIDITY, 2)
             }
+            save_to_file(fallback_data)  # Save fallback data as well
             socketio.emit('update_dashboard', fallback_data, to=None)
         # Wait 1 second before the next reading
         socketio.sleep(1)

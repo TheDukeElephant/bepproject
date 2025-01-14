@@ -194,6 +194,18 @@ def save_to_file(sensor_data):
 # Initialize the output file at the start of the script
 initialize_output_file()
 
+def control_humidifier(average_temperature):
+    """Turn the humidifier on or off based on temperature."""
+    humidifier_pin = device_pins['humidifier']  # Get the humidifier GPIO pin
+
+    if average_temperature < 36.9:
+        GPIO.output(humidifier_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)
+        print("Humidifier turned ON")
+    elif average_temperature > 37.1:
+        GPIO.output(humidifier_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
+        print("Humidifier turned OFF")
+
+
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
 
@@ -209,7 +221,14 @@ def background_sensor_read():
             o2_value = FALLBACK_O2  # Use a constant fallback since it's not dynamically read
             temperatures = [read_temperature(sensor) for sensor in sensors]
             humidity = read_humidity()
+            
+            # Calculate average temperature
+            average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
 
+            # Humidifier control based on temperature
+            control_humidifier(average_temperature)
+            
+            time.sleep(10)
             # CO₂ Sensor Reading
             if ser is not None:
                 try:

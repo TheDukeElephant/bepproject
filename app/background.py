@@ -16,6 +16,7 @@ from collections import deque
 from PIL import Image, ImageDraw, ImageFont
 import csv
 import subprocess
+import RPi.GPIO as GPIO
 
 # Define the output file path
 OUTPUT_FILE = "sensor_data.csv"

@@ -196,7 +196,7 @@ initialize_output_file()
 
 def control_humidifier(average_temperature):
     """Turn the humidifier on or off based on temperature."""
-    humidifier_pin = device_pins['humidifier']  # Get the humidifier GPIO pin
+    humidifier_pin = 27  # Get the humidifier GPIO pin
 
     if average_temperature < 36.9:
         GPIO.output(humidifier_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)

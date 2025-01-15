@@ -19,7 +19,7 @@ if __name__ == "__main__":
     print("Background tasks started")
     print("Starting Flask application...")
     # Start Wi-Fi monitoring in a background task
-    #start_wifi_monitor()
+    start_wifi_monitor()
     
     try:
         # Run the Flask-SocketIO server

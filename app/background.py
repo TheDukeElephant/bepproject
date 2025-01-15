@@ -196,21 +196,21 @@ def save_to_file(sensor_data):
 # Initialize the output file at the start of the script
 initialize_output_file()
 
-def control_humidifier(average_temperature):
-    """Turn the humidifier on or off based on temperature."""
-    humidifier_pin = 27  # Get the humidifier GPIO pin
+def control_temperature(average_temperature):
+    """Turn the temperature on or off based on temperature."""
+    temperature_pin = 27  # Get the humidifier GPIO pin
 
     if average_temperature < 36.9:
-        GPIO.output(humidifier_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)
-        print("Humidifier turned ON")
+        GPIO.output(temperature_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)
+        print("Temperature heating turned ON")
     elif average_temperature > 37.1:
-        GPIO.output(humidifier_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
-        print("Humidifier turned OFF")
+        GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
+        print("Temperature heating turned OFF")
 
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
-    last_humidifier_control_time = time.time()  # Initialize the last control time
+    last_temperature_control_time = time.time()  # Initialize the last control time
 
     while True:
         try:
@@ -228,11 +228,11 @@ def background_sensor_read():
             # Calculate average temperature
             average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
 
-            # Control humidifier every 10 seconds
+            # Control temperature every 10 seconds
             current_time = time.time()
-            if current_time - last_humidifier_control_time >= CONTROL_INTERVAL:
-                control_humidifier(average_temperature)
-                last_humidifier_control_time = current_time
+            if current_time - last_temperature_control_time >= CONTROL_INTERVAL:
+                control_temperature(average_temperature)
+                last_temperature_control_time = current_time
 
             # CO₂ Sensor Reading
             if ser is not None:

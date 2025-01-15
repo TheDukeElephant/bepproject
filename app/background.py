@@ -21,7 +21,8 @@ import RPi.GPIO as GPIO
 # Define the output file path
 OUTPUT_FILE = "sensor_data.csv"
 
-
+#interval how often the control function is run (in seconds)
+CONTROL_INTERVAL = 10
 # Default fallback values which will all be filtered out in js
 FALLBACK_CO2 = 40  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 23  # Example fallback O2 level in %
@@ -209,6 +210,7 @@ def control_humidifier(average_temperature):
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
+    last_humidifier_control_time = time.time()  # Initialize the last control time
 
     while True:
         try:
@@ -226,10 +228,12 @@ def background_sensor_read():
             # Calculate average temperature
             average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
 
-            # Humidifier control based on temperature
-            control_humidifier(average_temperature)
-            
-            time.sleep(10)
+            # Control humidifier every 10 seconds
+            current_time = time.time()
+            if current_time - last_humidifier_control_time >= CONTROL_INTERVAL:
+                control_humidifier(average_temperature)
+                last_humidifier_control_time = current_time
+
             # CO₂ Sensor Reading
             if ser is not None:
                 try:
@@ -242,13 +246,11 @@ def background_sensor_read():
                     co2_response = co2_response.strip()
 
                     print(f"Raw CO₂ sensor response: {co2_response}")  # Debugging log
-                    
 
-                    # Check if the response starts with "Z"
                     if co2_response.startswith("Z") and len(co2_response) > 1:
                         co2_value_ppm = int(co2_response[1:].strip()) * 10
                         co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage
-                        print("Response from CO₂ sansor went well")
+                        print("Response from CO₂ sensor went well")
                     else:
                         print(f"Unexpected response from CO₂ sensor: {co2_response}")
                 except Exception as e:
@@ -265,25 +267,23 @@ def background_sensor_read():
                 'temperatures': [round(temp, 2) for temp in temperatures] + [round((temperatures[2] + temperatures[3]) / 2, 2)],
                 'humidity': round(humidity, 2)
             }
-            
+
             # Save the data to the file
             save_to_file(sensor_data)
-            
-            
+
             # Store data in buffer
             data_buffer.append(sensor_data)
 
             # Emit the data to connected clients
             socketio.emit('update_dashboard', sensor_data, to=None)
             print("Emitting data successfully.")
-            
+
             # Check for "Not connected" conditions
             display_temp = "Not connected" if sensor_data['temperatures'][5] > 950 else f"{sensor_data['temperatures'][5]} C"
             display_humidity = "Not connected" if sensor_data['humidity'] > 100 else f"{sensor_data['humidity']} %"
             display_o2 = "Not connected" if sensor_data['o2'] > 21 else f"{sensor_data['o2']} %"
             display_co2 = "Not connected" if sensor_data['co2'] > 21 else f"{sensor_data['co2']} %"
 
-            
             # Display data on the OLED if available
             if oled:
                 ip_address = get_ip_address()
@@ -315,8 +315,10 @@ def background_sensor_read():
             }
             save_to_file(fallback_data)  # Save fallback data as well
             socketio.emit('update_dashboard', fallback_data, to=None)
-        # Wait 1 second before the next reading
+
+        # Emit data every second
         socketio.sleep(1)
+
 
 
 

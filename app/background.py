@@ -61,31 +61,6 @@ DHT_PIN = 4  # GPIO pin number
 #for co2_sensor_pin in co2_sensor_pins:
 #    co2_sensor_pin.direction = digitalio.Direction.INPUT
 
-# Function to check if the Raspberry Pi is connected to Wi-Fi
-def is_wifi_connected():
-    try:
-        # Ping Google DNS to check connection
-        subprocess.check_call(['ping', '-c', '1', '8.8.8.8'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-# Function to reconnect to Wi-Fi
-def reconnect_wifi():
-    print("Reconnecting to Wi-Fi...")
-    try:
-        os.system('sudo ifconfig wlan0 down')  # Bring down the Wi-Fi interface
-        os.system('sudo ifconfig wlan0 up')    # Bring up the Wi-Fi interface
-        time.sleep(10)  # Give some time for reconnection
-    except Exception as e:
-        print(f"Error reconnecting to Wi-Fi: {e}")
-
-# Background function to monitor and reconnect Wi-Fi
-def wifi_monitor():
-    while True:
-        if not is_wifi_connected():
-            reconnect_wifi()
-        time.sleep(60)  # Check every 60 seconds
 
 
 def get_ip_address():

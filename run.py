@@ -12,14 +12,14 @@ init_db()
 if __name__ == "__main__":
     print("Starting background tasks...")
     
-    # Start Wi-Fi monitoring in a background task
-    start_wifi_monitor()
     
     # Start the sensor reading task in the background
     socketio.start_background_task(target=background_sensor_read)
     
     print("Background tasks started")
     print("Starting Flask application...")
+    # Start Wi-Fi monitoring in a background task
+    start_wifi_monitor()
     
     try:
         # Run the Flask-SocketIO server

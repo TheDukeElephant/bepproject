@@ -19,19 +19,19 @@ def send_command(command):
         return None
 
 # Switch to Command Mode (K 0)
-print("Setting sensor to Command Mode...")
-response = send_command("K 0")
-if response == "K 0":
-    print("Sensor is now in Command Mode.")
-    # Switch to Polling Mode (K 2)
-    print("Switching to Polling Mode...")
-    response = send_command("K 2")
-    if response == "K 2":
-        print("Sensor is now in Polling Mode.")
-    else:
-        print(f"Failed to set Polling Mode. Response: {response}")
-else:
-    print(f"Failed to set Command Mode. Response: {response}")
+# print("Setting sensor to Command Mode...")
+# response = send_command("K 0")
+# if response == "K 0":
+#     print("Sensor is now in Command Mode.")
+#     # Switch to Polling Mode (K 2)
+#     print("Switching to Polling Mode...")
+#     response = send_command("K 2")
+#     if response == "K 2":
+#         print("Sensor is now in Polling Mode.")
+#     else:
+#         print(f"Failed to set Polling Mode. Response: {response}")
+# else:
+#     print(f"Failed to set Command Mode. Response: {response}")
 
 # Main loop to read CO₂ levels
 while True:

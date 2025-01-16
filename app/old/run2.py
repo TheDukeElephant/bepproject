@@ -75,7 +75,7 @@ zero_readings_count = 0
 while True:
     try:
         # Request CO₂ measurement
-        response = send_command("Z 2")  # Command to get filtered CO₂ measurement
+        response = send_command("Z")  # Command to get filtered CO₂ measurement
         if response and response.startswith("Z"):
             try:
                 co2_ppm = int(response.split()[1]) * 10  # Apply multiplier (default is 10)

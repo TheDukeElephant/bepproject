@@ -3,33 +3,44 @@ import time
 
 # Initialize the serial port
 ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
-time.sleep(1)
+time.sleep(1)  # Allow time for serial initialization
 
-# Optional: Send initialization command only once
-ser.write(b'K 2\r\n')
-time.sleep(0.5)  # Allow time for the sensor to initialize
+# Function to send commands and handle responses
+def send_command(command):
+    """
+    Sends a command to the sensor and returns the response.
+    """
+    try:
+        ser.write(command.encode('utf-8') + b'\r\n')  # Send command with \r\n
+        time.sleep(0.1)  # Wait for response
+        response = ser.read_until(b'\n').decode('utf-8').strip()  # Read until newline
+        return response
+    except Exception as e:
+        print(f"Error sending command {command}: {e}")
+        return None
 
+# Ensure the sensor is in polling mode (Mode 2)
+print("Setting sensor to polling mode...")
+response = send_command("K 2")
+if response and response.startswith("K"):
+    print(f"Sensor mode set to: {response}")
+else:
+    print(f"Failed to set mode. Response: {response}")
+
+# Main loop to read CO₂ levels
 while True:
     try:
-        # Send the test command to get CO₂ data
-        ser.write(b'Z\r\n')  # Command to the CO₂ sensor
-        time.sleep(0.1)  # Wait for the sensor to respond (increased from 0.01)
-
-        # Read the response from the sensor
-        response = ""
-        start_time = time.time()
-        while time.time() - start_time < 3:  # Read for up to 1 second
-            if ser.in_waiting > 0:
-                response += ser.read(ser.in_waiting).decode("utf-8")
-
-        response = response.strip()  # Clean up the response
-
-        if response:
-            print(f"Response from CO₂ sensor: {response}")
+        # Request filtered CO₂ reading
+        response = send_command("Z")
+        
+        if response and response.startswith("Z"):
+            # Extract the value and apply scaling factor
+            co2_ppm = int(response.split()[1]) * 10  # Multiply by scaling factor
+            print(f"CO₂ Level: {co2_ppm} ppm")
         else:
-            print("No response received from CO₂ sensor")
+            print(f"Unexpected response: {response}")
 
     except Exception as e:
-        print(f"Error communicating with CO₂ sensor: {e}")
+        print(f"Error during communication: {e}")
 
-    time.sleep(1)  # Wait 1 second before the next command
+    time.sleep(1)  # Wait before next reading

@@ -11,7 +11,7 @@ def send_command(command):
     """
     try:
         ser.write(command.encode('utf-8') + b'\r\n')
-        time.sleep(0.001)  # Allow time for sensor to respond
+        time.sleep(0.5)  # Allow time for sensor to respond
         response = ser.read_until(b'\n').decode('utf-8').strip()
         return response
     except Exception as e:

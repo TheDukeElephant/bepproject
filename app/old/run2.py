@@ -18,26 +18,23 @@ def send_command(command):
         print(f"Error sending command {command}: {e}")
         return None
 
-# Switch to Command Mode (K 0)
-# print("Setting sensor to view mode Mode...")
-# response = send_command("K 2")
-# if response == "K 0":
-#     print("Sensor is now in Command Mode.")
-#     # Switch to Polling Mode (K 2)
-#     print("Switching to Polling Mode...")
-#     response = send_command("K 2")
-#     if response == "K 2":
-#         print("Sensor is now in Polling Mode.")
-#     else:
-#         print(f"Failed to set Polling Mode. Response: {response}")
-# else:
-#     print(f"Failed to set Command Mode. Response: {response}")
+# Calibrate the sensor for 400 ppm in fresh air
+def calibrate_sensor():
+    print("Starting calibration to 400 ppm...")
+    calibration_response = send_command("G")  # Send fresh air zero-point calibration command
+    if calibration_response and calibration_response.startswith("G"):
+        print(f"Calibration successful: {calibration_response}")
+    else:
+        print(f"Calibration failed or unexpected response: {calibration_response}")
+
+# Perform calibration
+calibrate_sensor()
 
 # Main loop to read CO₂ levels
 while True:
     try:
         # Request CO₂ measurement
-        response = send_command("Z 2")
+        response = send_command("Z")  # Command to get filtered CO₂ measurement
         if response and response.startswith("Z"):
             co2_ppm = int(response.split()[1]) * 10  # Apply multiplier (default is 10)
             print(f"CO₂ Level: {co2_ppm} ppm")

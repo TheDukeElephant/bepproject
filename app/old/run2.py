@@ -19,8 +19,8 @@ def send_command(command):
         return None
 
 # Switch to Command Mode (K 0)
-# print("Setting sensor to Command Mode...")
-# response = send_command("K 0")
+print("Setting sensor to view mode Mode...")
+response = send_command("K 2")
 # if response == "K 0":
 #     print("Sensor is now in Command Mode.")
 #     # Switch to Polling Mode (K 2)
@@ -37,7 +37,7 @@ def send_command(command):
 while True:
     try:
         # Request CO₂ measurement
-        response = send_command("Z")
+        response = send_command("Z 2")
         if response and response.startswith("Z"):
             co2_ppm = int(response.split()[1]) * 10  # Apply multiplier (default is 10)
             print(f"CO₂ Level: {co2_ppm} ppm")

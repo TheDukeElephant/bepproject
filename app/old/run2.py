@@ -12,7 +12,7 @@ time.sleep(0.5)  # Allow time for the sensor to initialize
 while True:
     try:
         # Send the test command to get CO₂ data
-        ser.write(b'Z 2\r\n')  # Command to the CO₂ sensor
+        ser.write(b'Z\r\n')  # Command to the CO₂ sensor
         time.sleep(0.1)  # Wait for the sensor to respond (increased from 0.01)
 
         # Read the response from the sensor

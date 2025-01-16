@@ -22,6 +22,7 @@ def send_command(command):
 def calibrate_sensor():
     print("Starting calibration to 400 ppm...")
     calibration_response = send_command("G")  # Send fresh air zero-point calibration command
+    time.sleep(0.5) 
     if calibration_response and calibration_response.startswith("G"):
         print(f"Calibration successful: {calibration_response}")
     else:
@@ -29,7 +30,7 @@ def calibrate_sensor():
 
 # Perform calibration
 calibrate_sensor()
-
+time.sleep(2) 
 # Main loop to read CO₂ levels
 while True:
     try:

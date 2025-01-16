@@ -11,7 +11,7 @@ def send_command(command):
     """
     try:
         ser.write(command.encode('utf-8') + b'\r\n')
-        time.sleep(0.1)  # Allow time for sensor to respond
+        time.sleep(0.001)  # Allow time for sensor to respond
         response = ser.read_until(b'\n').decode('utf-8').strip()
         return response
     except Exception as e:
@@ -19,8 +19,8 @@ def send_command(command):
         return None
 
 # Switch to Command Mode (K 0)
-print("Setting sensor to view mode Mode...")
-response = send_command("K 2")
+# print("Setting sensor to view mode Mode...")
+# response = send_command("K 2")
 # if response == "K 0":
 #     print("Sensor is now in Command Mode.")
 #     # Switch to Polling Mode (K 2)

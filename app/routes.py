@@ -16,6 +16,8 @@ device_pins = {
     'co2-solenoid': 4,         # GPIO 4: Relay 1 for CO2 solenoid
     'argon-solenoid': 17,      # GPIO 17: Relay 2 for Argon solenoid
     'humidifier': 27,          # GPIO 27: Relay 3 for humidifier
+    'humidifier2': 24,          # GPIO 27: Relay 3 for humidifier
+    
 
     # Motor driver connections for pump
     #'pump': 20,
@@ -27,7 +29,7 @@ device_pins = {
     #'ito-top': 22,
     'ito-top-ena': 22,         # GPIO 22: ENA for ITO top (PWM)
     'ito-top-in1': 23,         # GPIO 23: IN1 for ITO top
-    'ito-top-in2': 24,         # GPIO 24: IN2 for ITO top
+    'ito-top-in2': 1,         # GPIO 24: IN2 for ITO top
     #'ito-bottom': 16,
     'ito-bottom-ena': 16,      # GPIO 16: ENA for ITO bottom (PWM)
     'ito-bottom-in3': 25,      # GPIO 25: IN3 for ITO bottom
@@ -53,7 +55,7 @@ for device, pin in device_pins.items():
         raise ValueError(f"Pin value for '{device}' must be an integer, but got: {pin} of type {type(pin)}")
     print(f"Setting up GPIO pin for {device}: {pin}")
     GPIO.setup(pin, GPIO.OUT)
-    if 'solenoid' in device or 'humidifier' in device:
+    if 'solenoid' in device or 'humidifier' in device or 'humidifier2' in device:
         GPIO.output(pin, GPIO.HIGH)  # Ensure relays are OFF (HIGH is the off state for most relays)
     else:
         GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
@@ -161,7 +163,7 @@ def setup():
     config_file_path = 'config.txt'
 
     # Relay states to synchronize UI with hardware
-    relay_states = {device: GPIO.input(pin) for device, pin in device_pins.items() if 'solenoid' in device or 'humidifier' in device}
+    relay_states = {device: GPIO.input(pin) for device, pin in device_pins.items() if 'solenoid' in device or 'humidifier' in device or 'humidifier2' in device}
 
     if request.method == 'POST':
         # Handle the setup form submission

@@ -49,6 +49,7 @@
                     </div>
                 </div>
                 
+                
                 <!-- Submit Button -->
                 <button type="submit">Save</button>
             </form>
@@ -114,6 +115,12 @@
                 <label for="humidifier-toggle">Humidifier:</label>
                 <button id="humidifier-toggle" class="toggle-button {{ 'on' if relay_states['humidifier'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('humidifier')">
                     {{ 'On' if relay_states['humidifier'] == GPIO_LOW else 'Off' }}
+                </button>
+            </div>
+            <div class="control">
+                <label for="humidifier2-toggle">Humidifier:</label>
+                <button id="humidifier2-toggle" class="toggle-button {{ 'on' if relay_states['humidifier2'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('humidifier2')">
+                    {{ 'On' if relay_states['humidifier2'] == GPIO_LOW else 'Off' }}
                 </button>
             </div>
             

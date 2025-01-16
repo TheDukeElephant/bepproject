@@ -18,44 +18,40 @@ def send_command(command):
         print(f"Error sending command {command}: {e}")
         return None
 
-def check_and_disable_auto_calibration():
+def flush_serial_buffer():
     """
-    Checks if auto-calibration is enabled and disables it if necessary.
+    Flushes any remaining data in the serial buffer to avoid misinterpretation.
     """
-    print("Checking auto-calibration setting...")
-    response = send_command("@")  # Command to read auto-calibration status
-    if response and "@" in response:  # Check for valid response
-        if "1.0" in response:  # Auto-calibration is ON
-            print("Auto-calibration is ON. Disabling...")
-            disable_response = send_command("@ 0")  # Disable auto-calibration
-            if disable_response and "@ 0" in disable_response:
-                print("Auto-calibration successfully disabled.")
-            else:
-                print(f"Failed to disable auto-calibration: {disable_response}")
-        else:
-            print("Auto-calibration is already OFF.")
-    else:
-        print(f"Unexpected response while checking auto-calibration: {response}")
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
 
-def ensure_polling_mode():
+def disable_auto_calibration():
     """
-    Ensures the sensor is in polling mode (Mode 2).
+    Disables auto-calibration if it is enabled.
     """
-    print("Ensuring the sensor is in polling mode...")
-    response = send_command("K")  # Command to check the current mode
-    if response and response.startswith("K"):
-        current_mode = int(response.split()[1])
-        if current_mode != 2:  # If not in polling mode
-            print(f"Current mode is {current_mode}. Switching to polling mode...")
-            mode_response = send_command("K 2")  # Switch to Mode 2 (Polling mode)
-            if mode_response and mode_response.startswith("K 2"):
-                print("Sensor successfully switched to polling mode.")
-            else:
-                print(f"Failed to switch to polling mode: {mode_response}")
+    print("Disabling auto-calibration...")
+    for _ in range(3):  # Retry up to 3 times
+        response = send_command("@ 0")  # Disable auto-calibration
+        if response and "@ 0" in response:
+            print("Auto-calibration successfully disabled.")
+            return
         else:
-            print("Sensor is already in polling mode.")
-    else:
-        print(f"Unexpected response while checking mode: {response}")
+            print(f"Retrying auto-calibration disable. Response: {response}")
+    print("Failed to disable auto-calibration after 3 attempts.")
+
+def force_polling_mode():
+    """
+    Forces the sensor into polling mode (Mode 2).
+    """
+    print("Forcing the sensor into polling mode...")
+    for _ in range(3):  # Retry up to 3 times
+        response = send_command("K 2")  # Set Mode 2 (Polling Mode)
+        if response and response.startswith("K 2"):
+            print("Sensor successfully set to polling mode.")
+            return
+        else:
+            print(f"Retrying mode set to polling. Response: {response}")
+    print("Failed to set polling mode after 3 attempts.")
 
 def reconnect_sensor():
     """
@@ -68,11 +64,10 @@ def reconnect_sensor():
     ser.open()
     time.sleep(2)  # Allow the sensor to stabilize after reconnecting
 
-# Check and disable auto-calibration at the start
-check_and_disable_auto_calibration()
-
-# Ensure the sensor is in polling mode
-ensure_polling_mode()
+# Initial setup
+flush_serial_buffer()
+disable_auto_calibration()
+force_polling_mode()
 
 zero_readings_count = 0
 

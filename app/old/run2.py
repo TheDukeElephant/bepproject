@@ -18,7 +18,7 @@ while True:
         # Read the response from the sensor
         response = ""
         start_time = time.time()
-        while time.time() - start_time < 1:  # Read for up to 1 second
+        while time.time() - start_time < 3:  # Read for up to 1 second
             if ser.in_waiting > 0:
                 response += ser.read(ser.in_waiting).decode("utf-8")
 

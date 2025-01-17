@@ -22,7 +22,10 @@ import RPi.GPIO as GPIO
 OUTPUT_FILE = "sensor_data.csv"
 
 #interval how often the control function is run (in seconds)
-CONTROL_INTERVAL = 10
+CONTROL_INTERVAL_TEMP = 10
+
+CONTROL_INTERVAL_CO2 = 30
+TIME_CO2_SOLENOID_ON = 0.1
 # Default fallback values which will all be filtered out in js
 FALLBACK_CO2 = 40  # Example fallback CO2 level in ppm
 FALLBACK_O2 = 23  # Example fallback O2 level in %
@@ -182,10 +185,26 @@ def control_temperature(average_temperature):
         GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
         print("Temperature heating turned OFF")
 
+def control_co2(co2_value):
+    """Turn the co2 on or off based on co2."""
+    temperature_pin = 4  # Get the co2 solenoid GPIO pin
+
+    if co2_value > 0.01 and co2_value < 5.5:
+        GPIO.output(temperature_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)
+        print("CO2 solenoid turned ON")
+        time.sleep(TIME_CO2_SOLENOID_ON)
+        GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
+        print("CO2 solenoid turned OFF")
+    elif co2_value > 5.5:
+        GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
+        print("CO2 solenoid turned OFF")
+
+
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
-    last_temperature_control_time = time.time()  # Initialize the last control time
+    last_temperature_control_time_temp = time.time()  # Initialize the last control time
+    last_temperature_control_time_co2 = time.time()  # Initialize the last control time
 
     while True:
         try:
@@ -205,10 +224,11 @@ def background_sensor_read():
 
             # Control temperature every 10 seconds
             current_time = time.time()
-            if current_time - last_temperature_control_time >= CONTROL_INTERVAL:
+            if current_time - last_temperature_control_time_temp >= CONTROL_INTERVAL_TEMP:
                 control_temperature(average_temperature)
-                last_temperature_control_time = current_time
+                last_temperature_control_time_temp = current_time
 
+            
             # CO₂ Sensor Reading
             if ser is not None:
                 try:
@@ -233,6 +253,11 @@ def background_sensor_read():
                     ser.close()  # Close the serial port on failure
                     ser = None  # Mark the connection as invalid
                     co2_value = round(FALLBACK_CO2 / 10000, 2)
+
+            # start co2 function als interval is geweest
+            if current_time - last_temperature_control_time_co2 >= CONTROL_INTERVAL_CO2:
+                control_co2(co2_value)
+                last_temperature_control_time_co2 = current_time
 
             # Prepare sensor data to emit
             sensor_data = {

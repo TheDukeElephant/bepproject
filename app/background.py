@@ -204,26 +204,35 @@ def control_co2(co2_value):
         print("CO2 solenoid turned OFF")
 
 # Control threads
-def temperature_control_thread(average_temperature):
+def temperature_control_thread():
     while True:
         try:
-            current_time = time.time()
-            average_temperature = average_temperature()  # Calculate or get this value
+            # Dynamically calculate the average temperature
+            temperatures = [read_temperature(sensor) for sensor in sensors]
+            average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
+            
+            # Control temperature based on the average
             control_temperature(average_temperature)
-            time.sleep(CONTROL_INTERVAL_TEMP)  # Control interval
+            time.sleep(CONTROL_INTERVAL_TEMP)  # Run at specified intervals
         except Exception as e:
             print(f"Error in temperature control thread: {e}")
 
-def co2_control_thread(co2_value):
+
+def co2_control_thread():
     while True:
         try:
-            current_time = time.time()
-            #co2_value = co2_value()  # Get or calculate the current CO2 value
+            # Dynamically fetch the CO2 value
+            ser = initialize_serial()
+            if ser is not None:
+                co2_value = get_co2_value_from_serial(ser)
+            else:
+                co2_value = FALLBACK_CO2
+
+            # Control CO2 based on the fetched value
             control_co2(co2_value)
-            time.sleep(CONTROL_INTERVAL_CO2)  # Control interval
+            time.sleep(CONTROL_INTERVAL_CO2)  # Run at specified intervals
         except Exception as e:
             print(f"Error in CO2 control thread: {e}")
-
 
 
 def background_sensor_read():
@@ -232,6 +241,7 @@ def background_sensor_read():
     last_temperature_control_time_co2 = time.time()  # Initialize the last control time
     
     global threads_started
+    
     if not threads_started:
         # Start control threads only once
         threading.Thread(target=temperature_control_thread, daemon=True).start()

@@ -22,6 +22,9 @@ import RPi.GPIO as GPIO
 # Define the output file path
 OUTPUT_FILE = "sensor_data.csv"
 
+
+threads_started = False
+
 #interval how often the control function is run (in seconds)
 CONTROL_INTERVAL_TEMP = 10
 

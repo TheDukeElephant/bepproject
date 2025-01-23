@@ -193,13 +193,13 @@ def control_co2(co2_value):
     """Turn the co2 on or off based on co2."""
     temperature_pin = 4  # Get the co2 solenoid GPIO pin
 
-    if co2_value > 0.01 and co2_value < 5.5:
+    if co2_value > 0.01 and co2_value < 5:
         GPIO.output(temperature_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)
         print("CO2 solenoid turned ON")
         time.sleep(TIME_CO2_SOLENOID_ON)
         GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
         print("CO2 solenoid turned OFF")
-    elif co2_value > 5.5:
+    elif co2_value > 5:
         GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
         print("CO2 solenoid turned OFF")
 

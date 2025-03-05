@@ -6,6 +6,7 @@ from app.serial_port import initialize_serial
 from . import socketio
 import Adafruit_DHT
 import atexit
+import threading
 import board  
 import busio
 import digitalio
@@ -20,6 +21,9 @@ import RPi.GPIO as GPIO
 
 # Define the output file path
 OUTPUT_FILE = "sensor_data.csv"
+
+
+threads_started = False
 
 #interval how often the control function is run (in seconds)
 CONTROL_INTERVAL_TEMP = 10
@@ -189,22 +193,61 @@ def control_co2(co2_value):
     """Turn the co2 on or off based on co2."""
     temperature_pin = 4  # Get the co2 solenoid GPIO pin
 
-    if co2_value > 0.01 and co2_value < 5.5:
+    if co2_value > 0.01 and co2_value < 5:
         GPIO.output(temperature_pin, GPIO.LOW)  # Turn ON the humidifier (LOW for ON)
         print("CO2 solenoid turned ON")
         time.sleep(TIME_CO2_SOLENOID_ON)
         GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
         print("CO2 solenoid turned OFF")
-    elif co2_value > 5.5:
+    elif co2_value > 5:
         GPIO.output(temperature_pin, GPIO.HIGH)  # Turn OFF the humidifier (HIGH for OFF)
         print("CO2 solenoid turned OFF")
 
+# Control threads
+def temperature_control_thread():
+    while True:
+        try:
+            # Dynamically calculate the average temperature
+            temperatures = [read_temperature(sensor) for sensor in sensors]
+            average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
+            
+            # Control temperature based on the average
+            control_temperature(average_temperature)
+            time.sleep(CONTROL_INTERVAL_TEMP)  # Run at specified intervals
+        except Exception as e:
+            print(f"Error in temperature control thread: {e}")
+
+
+def co2_control_thread():
+    while True:
+        try:
+            # Dynamically fetch the CO2 value
+            ser = initialize_serial()
+            if ser is not None:
+                co2_value = get_co2_value_from_serial(ser)
+            else:
+                co2_value = FALLBACK_CO2
+
+            # Control CO2 based on the fetched value
+            control_co2(co2_value)
+            time.sleep(CONTROL_INTERVAL_CO2)  # Run at specified intervals
+        except Exception as e:
+            print(f"Error in CO2 control thread: {e}")
 
 
 def background_sensor_read():
     ser = initialize_serial()  # Initialize CO₂ sensor via UART
     last_temperature_control_time_temp = time.time()  # Initialize the last control time
     last_temperature_control_time_co2 = time.time()  # Initialize the last control time
+    
+    global threads_started
+    
+    if not threads_started:
+        # Start control threads only once
+        threading.Thread(target=temperature_control_thread, daemon=True).start()
+        threading.Thread(target=co2_control_thread, daemon=True).start()
+        threads_started = True
+
 
     while True:
         try:
@@ -231,28 +274,7 @@ def background_sensor_read():
             
             # CO₂ Sensor Reading
             if ser is not None:
-                try:
-                    ser.write(b'Z 2\r\n')  # Send the CO₂ data request command
-                    time.sleep(0.1)  # Allow time for response
-
-                    co2_response = ""
-                    while ser.in_waiting > 0:
-                        co2_response += ser.read().decode("utf-8")
-                    co2_response = co2_response.strip()
-
-                    print(f"Raw CO₂ sensor response: {co2_response}")  # Debugging log
-
-                    if co2_response.startswith("Z") and len(co2_response) > 1:
-                        co2_value_ppm = int(co2_response[1:].strip()) * 10
-                        co2_value = round(co2_value_ppm / 10000, 2)  # Convert ppm to percentage
-                        print("Response from CO₂ sensor went well")
-                    else:
-                        print(f"Unexpected response from CO₂ sensor: {co2_response}")
-                except Exception as e:
-                    print(f"Error reading CO₂ sensor: {e}")
-                    ser.close()  # Close the serial port on failure
-                    ser = None  # Mark the connection as invalid
-                    co2_value = round(FALLBACK_CO2 / 10000, 2)
+                co2_value = get_co2_value_from_serial(ser)
 
             # start co2 function als interval is geweest
             if current_time - last_temperature_control_time_co2 >= CONTROL_INTERVAL_CO2:
@@ -319,8 +341,32 @@ def background_sensor_read():
         # Emit data elke seconde want slapen 1 sec
         socketio.sleep(1)
 
+def get_co2_value_from_serial(ser):
+    try:
+        ser.write(b'Z 2\r\n')
+        time.sleep(0.1)
+        co2_response = ser.read(ser.in_waiting).decode("utf-8").strip()
+        return process_co2_response(co2_response)
+    except Exception as e:
+        print(f"Error reading CO2 sensor: {e}")
+        return FALLBACK_CO2
 
 
+def process_co2_response(response):
+    try:
+        if response.startswith("Z") and len(response) > 1:
+            co2_value_ppm = int(response[1:].strip()) * 10
+            return round(co2_value_ppm / 10000, 2)
+    except Exception as e:
+        print(f"Error processing CO2 response: {e}")
+    return FALLBACK_CO2
+
+temperatures = [read_temperature(sensor) for sensor in sensors]
+# Utility functions
+def calculate_average_temperature(temperatures):
+    average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
+    
+    return average_temperature
 
 @socketio.on('request_data')
 def send_buffered_data():

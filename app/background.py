@@ -313,10 +313,10 @@ def background_sensor_read():
                 'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors),
                 'humidity': round(FALLBACK_HUMIDITY, 2)
             }
-            save_to_file(fallback_data)  # Save fallback data as well
+            save_to_file(fallback_data)  # fallback data moet ook gesaved worden
             socketio.emit('update_dashboard', fallback_data, to=None)
 
-        # Emit data every second
+        # Emit data elke seconde want slapen 1 sec
         socketio.sleep(1)
 
 
@@ -324,6 +324,6 @@ def background_sensor_read():
 
 @socketio.on('request_data')
 def send_buffered_data():
-    """Send buffered data to the client upon request."""
+    #dit is om de data te verzenden naar de socketio om te emitten naar het dashboard, (niks veranderen!)
     for data in data_buffer:
         emit('update_dashboard', data)

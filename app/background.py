@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 import csv
 import subprocess
 import RPi.GPIO as GPIO
-import DFRobot_Oxygen
+from . import DFRobot_Oxygen
 import logging
 from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2
 

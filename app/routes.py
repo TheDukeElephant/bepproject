@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 import RPi.GPIO as GPIO
 import atexit
 import logging
-from config import CO2_THRESHOLD, O2_THRESHOLD
+from config import Config  # Updated import
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -171,7 +171,7 @@ def setup():
         humidity_threshold = request.form.get('humidity_threshold')
 
         # Example usage of config constants:
-        if float(co2_threshold) > CO2_THRESHOLD:
+        if float(co2_threshold) > Config.CO2_THRESHOLD:  # Updated usage
             logging.warning("CO2 threshold set above recommended limit.")
 
         try:

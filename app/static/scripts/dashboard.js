@@ -123,10 +123,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         document.getElementById('o2').textContent = o2DisplayValue;
 
-        // Now we only update tempChart with sensorData.temperatures[lastIndex or single index]
-        const avgTemp = data.temperatures[data.temperatures.length - 1] || 0;
-        document.getElementById('temp6').textContent = (avgTemp > 950) ? 'Not connected' : (avgTemp + ' °C');
-        updateChart(tempChart, now, avgTemp, 0);
+        // Update temperature values and chart
+        const temperatures = data.temperatures;
+        document.getElementById('temp1').textContent = (temperatures[0] > 950) ? 'Not connected' : (temperatures[0] + ' °C');
+        document.getElementById('temp2').textContent = (temperatures[1] > 950) ? 'Not connected' : (temperatures[1] + ' °C');
+        document.getElementById('temp3').textContent = (temperatures[2] > 950) ? 'Not connected' : (temperatures[2] + ' °C');
+        document.getElementById('temp4').textContent = (temperatures[3] > 950) ? 'Not connected' : (temperatures[3] + ' °C');
+        document.getElementById('temp6').textContent = (temperatures[4] > 950) ? 'Not connected' : (temperatures[4] + ' °C');
+        updateChart(tempChart, now, temperatures[4], 0);
 
         // Update Humidity value and chart
         let humidityDisplayValue;

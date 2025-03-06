@@ -52,16 +52,24 @@ except Exception as e:
     logging.error(f"Error initializing OLED display: {e}")
     oled = None
 
-spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
-cs_pins = [board.D5, board.D6, board.D13, board.D19, board.D26]
-sensors = [adafruit_max31865.MAX31865(spi, digitalio.DigitalInOut(cs), rtd_nominal=100.0, ref_resistor=430.0) for cs in cs_pins]
-
+spi = None
+sensors = []
+try:
+    spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
+    cs_pins = [board.D5, board.D6, board.D13, board.D19, board.D26]
+    sensors = [adafruit_max31865.MAX31865(spi, digitalio.DigitalInOut(cs), rtd_nominal=100.0, ref_resistor=430.0) for cs in cs_pins]
+except Exception as e:
+    logging.error(f"Error initializing temperature sensors: {e}")
 
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  
 
 # Initialize the DFRobot Gravity Oxygen Sensor
-oxygen_sensor = DFRobot_Oxygen_IIC(1, 0x73)  # Updated to use bus number 1
+oxygen_sensor = None
+try:
+    oxygen_sensor = DFRobot_Oxygen_IIC(1, 0x73)  # Updated to use bus number 1
+except Exception as e:
+    logging.error(f"Error initializing oxygen sensor: {e}")
 
 
 def get_ip_address():
@@ -109,8 +117,11 @@ def read_humidity():
 
 def read_oxygen():
     try:
-        oxygen_value = oxygen_sensor.get_oxygen_concentration()
-        return oxygen_value
+        if oxygen_sensor:
+            oxygen_value = oxygen_sensor.get_oxygen_concentration()
+            return oxygen_value
+        else:
+            raise ValueError("Oxygen sensor not initialized")
     except Exception as e:
         logging.error(f"Error reading oxygen from DFRobot Gravity Oxygen Sensor: {e}")
         return FALLBACK_OXYGEN  # Use fallback oxygen value

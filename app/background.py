@@ -251,7 +251,6 @@ def background_sensor_read():
         threading.Thread(target=co2_control_thread, daemon=True).start()
         threads_started = True
 
-
     while True:
         try:
             # serial down? nog een keer
@@ -292,7 +291,7 @@ def background_sensor_read():
                 'timestamp': int(time.time()),
                 'co2': co2_value,
                 'o2': o2_value,
-                'temperatures': [round(temp, 2) for temp in temperatures] + [round((temperatures[2] + temperatures[3]) / 2, 2)],
+                'temperatures': [round(temp, 2) for temp in temperatures],
                 'humidity': round(humidity, 2)
             }
 
@@ -307,7 +306,7 @@ def background_sensor_read():
             logging.info("Emitting data successfully.")
 
             # als niet in range, zorg dat er not connected staat voor het gemak van de gebruiker
-            display_temp = "Not connected" if sensor_data['temperatures'][5] > 950 else f"{sensor_data['temperatures'][5]} C"
+            display_temp = "Not connected" if sensor_data['temperatures'][4] > 950 else f"{sensor_data['temperatures'][4]} C"
             display_humidity = "Not connected" if sensor_data['humidity'] > 100 else f"{sensor_data['humidity']} %"
             display_o2 = "Not connected" if sensor_data['o2'] > 21 else f"{sensor_data['o2']} %"
             display_co2 = "Not connected" if sensor_data['co2'] > 21 else f"{sensor_data['co2']} %"

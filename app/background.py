@@ -21,7 +21,6 @@ import RPi.GPIO as GPIO
 from . import DFRobot_Oxygen
 from .DFRobot_Oxygen import DFRobot_Oxygen_IIC  # Updated import
 import logging
-#from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2
 from config import Config  # Updated import
 
 # output file kiezen naam

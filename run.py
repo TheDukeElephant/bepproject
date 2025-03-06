@@ -3,7 +3,7 @@ try:
     from app.background import background_sensor_read
     from app.database import init_db
     from wifi_monitor import start_wifi_monitor
-    from config import LOG_FORMAT
+    from config import LOG_FORMAT  # Updated import
 except ModuleNotFoundError as e:
     print(f"Error importing modules: {e}")
     LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"

@@ -1,6 +1,6 @@
 import sqlite3
 import bcrypt
-from app.config import Config
+from config import Config  # Updated import
 
 DB_PATH = Config.DB_PATH
 

@@ -2,13 +2,19 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 import RPi.GPIO as GPIO
 import atexit
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define the Blueprint
 main_blueprint = Blueprint('main', __name__)
 
 # Initialize GPIO
-GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
-GPIO.setwarnings(False)
+try:
+    GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
+    GPIO.setwarnings(False)
+except Exception as e:
+    logging.error(f"Error initializing GPIO: {e}")
 
 # Define device pin mappings
 device_pins = {
@@ -38,27 +44,17 @@ device_pins = {
 
 # Validate and set all pins as output and initialize to OFF
 for device, pin in device_pins.items():
-    if not isinstance(pin, int):
-        raise ValueError(f"Pin value for '{device}' must be an integer, but got: {pin} of type {type(pin)}")
-    print(f"Setting up GPIO pin for {device}: {pin}")
-    GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, GPIO.LOW)  # Ensure all relays are off initially
-
-
-# Set all pins as output and initialize to OFF
-#for pin in device_pins.values():
-#    GPIO.setup(pin, GPIO.OUT)
-#    GPIO.output(pin, GPIO.LOW)
-# Set all pins as output and initialize them to the appropriate state
-for device, pin in device_pins.items():
-    if not isinstance(pin, int):
-        raise ValueError(f"Pin value for '{device}' must be an integer, but got: {pin} of type {type(pin)}")
-    print(f"Setting up GPIO pin for {device}: {pin}")
-    GPIO.setup(pin, GPIO.OUT)
-    if 'solenoid' in device or 'humidifier' in device or 'humidifier2' in device:
-        GPIO.output(pin, GPIO.HIGH)  # Ensure relays are OFF (HIGH is the off state for most relays)
-    else:
-        GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
+    try:
+        if not isinstance(pin, int):
+            raise ValueError(f"Pin value for '{device}' must be an integer, but got: {pin} of type {type(pin)}")
+        logging.info(f"Setting up GPIO pin for {device}: {pin}")
+        GPIO.setup(pin, GPIO.OUT)
+        if 'solenoid' in device or 'humidifier' in device or 'humidifier2' in device:
+            GPIO.output(pin, GPIO.HIGH)  # Ensure relays are OFF (HIGH is the off state for most relays)
+        else:
+            GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
+    except Exception as e:
+        logging.error(f"Error setting up GPIO pin for {device}: {e}")
 
 # Store PWM instances
 pwm_instances = {}
@@ -115,10 +111,10 @@ def toggle_device():
             pin = device_pins[device]
             GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
 
-        print(f"Device {device} toggled to {'ON' if state == 'on' else 'OFF'}")
+        logging.info(f"Device {device} toggled to {'ON' if state == 'on' else 'OFF'}")
         return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:
-        print(f"Error toggling device: {e}")
+        logging.error(f"Error toggling device: {e}")
         return {'error': str(e)}, 500
 
 
@@ -139,6 +135,7 @@ def set_device_speed():
 
         return {'status': 'success', 'device': device, 'speed': speed}
     except Exception as e:
+        logging.error(f"Error setting device speed: {e}")
         return {'error': str(e)}, 500
 
 

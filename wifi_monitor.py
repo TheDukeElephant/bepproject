@@ -2,6 +2,9 @@ import threading
 import time
 import os
 import subprocess
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def is_wifi_connected():
     try:
@@ -11,13 +14,17 @@ def is_wifi_connected():
         return False
 
 def reconnect_wifi():
-    print("Reconnecting to Wi-Fi...")
+    logging.info("Reconnecting to Wi-Fi...")
     try:
-        os.system('sudo ifconfig wlan0 down')
-        os.system('sudo ifconfig wlan0 up')
+        result_down = os.system('sudo ifconfig wlan0 down')
+        if result_down != 0:
+            raise Exception("Failed to bring down wlan0")
+        result_up = os.system('sudo ifconfig wlan0 up')
+        if result_up != 0:
+            raise Exception("Failed to bring up wlan0")
         time.sleep(10)
     except Exception as e:
-        print(f"Error reconnecting to Wi-Fi: {e}")
+        logging.error(f"Error reconnecting to Wi-Fi: {e}")
 
 def wifi_monitor():
     while True:

@@ -83,25 +83,6 @@ document.querySelectorAll('.slider').forEach(slider => {
     });
 });
 
-// Attach event listeners to sliders for real-time updates
-document.querySelectorAll('.slider').forEach(slider => {
-    slider.addEventListener('input', function () {
-        // Map slider IDs to backend device names
-        const sliderIdToDeviceMap = {
-            'setpumpspeed': 'pump-ena',      // Map pump speed slider
-            'settopito': 'ito-top-ena',     // Map ITO top speed slider
-            'setbottomito': 'ito-bottom-ena' // Map ITO bottom speed slider
-        };
-
-        const deviceId = sliderIdToDeviceMap[this.id]; // Get the backend device name
-        if (deviceId) {
-            updateDeviceSpeed(deviceId, this.value); // Send the speed update to the server
-        } else {
-            console.error(`No mapping found for slider ID: ${this.id}`);
-        }
-    });
-});
-
 // Adjust the value of an input field by a specified step
 function adjustValue(id, step) {
     const input = document.getElementById(id);

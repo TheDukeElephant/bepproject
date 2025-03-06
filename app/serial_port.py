@@ -1,5 +1,6 @@
 import serial
 import time
+import logging
 
 def initialize_serial():
     try:
@@ -9,5 +10,5 @@ def initialize_serial():
         time.sleep(0.1)
         return ser
     except Exception as e:
-        print(f"Error initializing serial port: {e}")
+        logging.error(f"Error initializing serial port: {e}")
         return None

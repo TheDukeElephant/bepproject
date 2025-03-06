@@ -4,6 +4,9 @@ import busio
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 import socket
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Function to get the IP address
 def get_ip():
@@ -13,12 +16,17 @@ def get_ip():
         ip = s.getsockname()[0]
         s.close()
     except Exception as e:
+        logging.error(f"Error getting IP address: {e}")
         ip = "No IP"
     return ip
 
 # Setup I2C and OLED
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = SSD1306_I2C(128, 32, i2c, addr=0x3C)  # Adjust addr if different
+try:
+    i2c = busio.I2C(board.SCL, board.SDA)
+    oled = SSD1306_I2C(128, 32, i2c, addr=0x3C)  # Adjust addr if different
+except Exception as e:
+    logging.error(f"Error initializing I2C or OLED: {e}")
+    exit(1)
 
 # Clear the display
 oled.fill(0)

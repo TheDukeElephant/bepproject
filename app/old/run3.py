@@ -1,5 +1,6 @@
 import serial
 import time
+import logging
 
 # Initialize the serial port
 ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=1)
@@ -15,7 +16,7 @@ def send_command(command):
         response = ser.read_until(b'\n').decode('utf-8').strip()
         return response
     except Exception as e:
-        print(f"Error sending command {command}: {e}")
+        logging.error(f"Error sending command {command}: {e}")
         return None
 
 def flush_serial_buffer():
@@ -72,11 +73,14 @@ def reconnect_sensor():
     Reconnects to the sensor by closing and reopening the serial port.
     """
     global ser
-    print("Reconnecting to the sensor...")
-    ser.close()
-    time.sleep(1)
-    ser.open()
-    time.sleep(2)  # Allow the sensor to stabilize after reconnecting
+    logging.info("Reconnecting to the sensor...")
+    try:
+        ser.close()
+        time.sleep(1)
+        ser.open()
+        time.sleep(2)  # Allow the sensor to stabilize after reconnecting
+    except Exception as e:
+        logging.error(f"Error reconnecting to the sensor: {e}")
 
 # Initial setup
 flush_serial_buffer()

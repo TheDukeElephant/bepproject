@@ -45,9 +45,9 @@ oled = None
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
     oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
-    print("OLED display initialized successfully.")
+    logging.info("OLED display initialized successfully.")
 except Exception as e:
-    print(f"Error initializing OLED display: {e}")
+    logging.error(f"Error initializing OLED display: {e}")
     oled = None
 
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
@@ -68,7 +68,7 @@ def get_ip_address():
         s.connect(("8.8.8.8", 80))
         ip_address = s.getsockname()[0]
     except Exception as e:
-        print(f"Error getting IP address: {e}")
+        logging.error(f"Error getting IP address: {e}")
         ip_address = "N/A"
     finally:
         s.close()
@@ -83,7 +83,7 @@ def get_wifi_ssid():
         else:
             return "N/A"
     except Exception as e:
-        print(f"Error getting Wi-Fi SSID: {e}")
+        logging.error(f"Error getting Wi-Fi SSID: {e}")
         return "N/A"
     
 def read_temperature(sensor):
@@ -91,7 +91,7 @@ def read_temperature(sensor):
         temperature = sensor.temperature
         return temperature
     except Exception as e:
-        print(f"Error reading temperature from MAX31865: {e}")
+        logging.error(f"Error reading temperature from MAX31865: {e}")
         return FALLBACK_TEMPERATURE
 
 def read_humidity():
@@ -102,7 +102,7 @@ def read_humidity():
         else:
             raise ValueError("Failed to read humidity")
     except Exception as e:
-        print(f"Error reading humidity from AM2302: {e}")
+        logging.error(f"Error reading humidity from AM2302: {e}")
         return FALLBACK_HUMIDITY
 
 def read_oxygen():
@@ -110,7 +110,7 @@ def read_oxygen():
         oxygen_value = oxygen_sensor.get_oxygen_concentration()
         return oxygen_value
     except Exception as e:
-        print(f"Error reading oxygen from DFRobot Gravity Oxygen Sensor: {e}")
+        logging.error(f"Error reading oxygen from DFRobot Gravity Oxygen Sensor: {e}")
         return FALLBACK_O2
     
 def standby_oled():
@@ -130,9 +130,9 @@ def standby_oled():
             draw.text((0, 30), "Standby...", font=font, fill=255)
             oled.image(image)
             oled.show()
-            print("OLED set to 'Standby...'")
+            logging.info("OLED set to 'Standby...'")
         except Exception as e:
-            print(f"Error displaying 'Standby...' on OLED: {e}")
+            logging.error(f"Error displaying 'Standby...' on OLED: {e}")
 
 
 #standby functie voor als je het script sluit
@@ -148,7 +148,7 @@ def initialize_output_file():
                 writer.writerow(['timestamp', 'co2', 'o2', 'temperature_1', 'temperature_2',
                                  'temperature_3', 'temperature_4', 'average_temperature', 'humidity'])
     except Exception as e:
-        print(f"Error initializing output file: {e}")
+        logging.error(f"Error initializing output file: {e}")
 
 # data opslaan belangrijk voor de grafieken van de incubator
 def save_to_file(sensor_data):
@@ -163,7 +163,7 @@ def save_to_file(sensor_data):
                 sensor_data['humidity']
             ])
     except Exception as e:
-        print(f"Error saving to output file: {e}")
+        logging.error(f"Error saving to output file: {e}")
 
 # output file nodig voor het opslaan van de waardes
 initialize_output_file()
@@ -189,13 +189,13 @@ def control_co2(co2_value):
 
     if co2_value > 0.01 and co2_value < 5:
         GPIO.output(temperature_pin, GPIO.LOW)  
-        print("CO2 solenoid turned ON")
+        logging.info("CO2 solenoid turned ON")
         time.sleep(TIME_CO2_SOLENOID_ON)
         GPIO.output(temperature_pin, GPIO.HIGH) 
-        print("CO2 solenoid turned OFF")
+        logging.info("CO2 solenoid turned OFF")
     elif co2_value > 5:
         GPIO.output(temperature_pin, GPIO.HIGH) 
-        print("CO2 solenoid turned OFF")
+        logging.info("CO2 solenoid turned OFF")
 
 
 def temperature_control_thread():
@@ -208,7 +208,7 @@ def temperature_control_thread():
             control_temperature(average_temperature)
             time.sleep(CONTROL_INTERVAL_TEMP) 
         except Exception as e:
-            print(f"Error in temperature control thread: {e}")
+            logging.error(f"Error in temperature control thread: {e}")
 
 
 def co2_control_thread():
@@ -223,7 +223,7 @@ def co2_control_thread():
             control_co2(co2_value)
             time.sleep(CONTROL_INTERVAL_CO2)  
         except Exception as e:
-            print(f"Error in CO2 control thread: {e}")
+            logging.error(f"Error in CO2 control thread: {e}")
 
 
 def background_sensor_read():
@@ -244,7 +244,7 @@ def background_sensor_read():
         try:
             # serial down? nog een keer
             if ser is None or not ser.is_open:
-                print("Reinitializing serial connection...")
+                logging.info("Reinitializing serial connection...")
                 ser = initialize_serial()
 
             # fallbacks
@@ -292,7 +292,7 @@ def background_sensor_read():
 
             # data moet naar alle clienten
             socketio.emit('update_dashboard', sensor_data, to=None)
-            print("Emitting data successfully.")
+            logging.info("Emitting data successfully.")
 
             # als niet in range, zorg dat er not connected staat voor het gemak van de gebruiker
             display_temp = "Not connected" if sensor_data['temperatures'][5] > 950 else f"{sensor_data['temperatures'][5]} C"
@@ -320,7 +320,7 @@ def background_sensor_read():
                 oled.show()
 
         except Exception as e:
-            print(f"Error reading sensors: {e}")
+            logging.error(f"Error reading sensors: {e}")
             # data moet altijd een fallback hebben voor als een sensor breekt.
             fallback_data = {
                 'timestamp': int(time.time()),
@@ -342,7 +342,7 @@ def get_co2_value_from_serial(ser):
         co2_response = ser.read(ser.in_waiting).decode("utf-8").strip()
         return process_co2_response(co2_response)
     except Exception as e:
-        print(f"Error reading CO2 sensor: {e}")
+        logging.error(f"Error reading CO2 sensor: {e}")
         return FALLBACK_CO2
 
 

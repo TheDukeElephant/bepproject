@@ -47,15 +47,15 @@ device_pins = {
 for device, pin in device_pins.items():
     try:
         if not isinstance(pin, int):
-            raise ValueError(f"Pin value for '{device}' must be an integer, but got: {pin} of type {type(pin)}")
-        logging.info(f"Setting up GPIO pin for {device}: {pin}")
+            raise ValueError(f"Pin value for '{device}' must be an integer, got {pin}")
+        logging.info(f"Setting up GPIO pin {pin} for {device}")
         GPIO.setup(pin, GPIO.OUT)
         if 'solenoid' in device or 'humidifier' in device or 'humidifier2' in device:
             GPIO.output(pin, GPIO.HIGH)  # Ensure relays are OFF (HIGH is the off state for most relays)
         else:
             GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
     except Exception as e:
-        logging.error(f"Error setting up GPIO pin for {device}: {e}")
+        logging.error(f"Error setting up GPIO for {device}: {e}")
 
 # Store PWM instances
 pwm_instances = {}

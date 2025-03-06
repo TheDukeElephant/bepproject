@@ -9,7 +9,7 @@ class Config:
     O2_THRESHOLD = 21.0
     TEMP_LOWER_BOUND = 36.9
     TEMP_UPPER_BOUND = 37.1
-    FALLBACK_CO2 = 20
+    FALLBACK_CO2 = 22
     FALLBACK_O2 = 22
 
     LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"  # Ensure LOG_FORMAT is defined

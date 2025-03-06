@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update CO₂ value and chart
         let co2DisplayValue;
-        if (typeof co2 === 'number' && co2 <= 39) {
+        if (typeof co2 === 'number' && co2 <= 21) {
             co2DisplayValue = `${co2} %`;
             updateChart(co2Chart, now, co2);
         } else {
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update O₂ value and chart
         let o2DisplayValue;
-        if (typeof o2 === 'number' && o2 <= 22) {
+        if (typeof o2 === 'number' && o2 <= 21.5) {
             o2DisplayValue = `${o2} %`;
             updateChart(o2Chart, now, o2);
         } else {

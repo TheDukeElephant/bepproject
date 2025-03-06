@@ -12,7 +12,10 @@
 import time
 import smbus
 import os
-           
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 ## I2C address select
 ADDRESS_0                 = 0x70
 ADDRESS_1                 = 0x71
@@ -93,10 +96,14 @@ class DFRobot_Oxygen_IIC(DFRobot_Oxygen):
     self.i2cbus.write_i2c_block_data(self.__addr, reg, data)
 
   def read_reg(self, reg, len):
-    while 1:
+    retries = 5
+    while retries > 0:
       try:
         rslt = self.i2cbus.read_i2c_block_data(self.__addr, reg, len)
         return rslt
-      except:
-        os.system('i2cdetect -y 1')
+      except Exception as e:
+        logging.error(f"Error reading I2C data: {e}")
+        retries -= 1
         time.sleep(1)
+    logging.error("Failed to read I2C data after multiple attempts")
+    return [0, 0, 0]  # Return a default value or handle the error as needed

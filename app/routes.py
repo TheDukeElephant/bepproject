@@ -65,6 +65,12 @@ for pwm_device in pwm_pins:
     pwm_instances[pwm_device] = GPIO.PWM(pin, 100)  # 100 Hz frequency
     pwm_instances[pwm_device].start(0)  # Start with 0% duty cycle
 
+# Store current duty cycles in memory so we can reflect them accurately on the Setup page
+current_pwm_duty_cycle = {
+    'pump-ena': 50,
+    'ito-top-ena': 50,
+    'ito-bottom-ena': 50
+}
 
 # Ensure GPIO cleanup on application exit
 def cleanup_gpio():
@@ -83,32 +89,31 @@ def toggle_device():
     """Toggle a relay or GPIO pin."""
     try:
         data = request.json
-        device = data.get('device')  # Example: 'pump', 'ito-top', 'ito-bottom'
+        device = data.get('device')
         state = data.get('state')  # 'on' or 'off'
 
         if device not in device_pins and device not in ['pump', 'ito-top', 'ito-bottom']:
             return {'error': f"Invalid device: {device}"}, 400
 
         if device == 'pump':
-            # Handle pump motor driver
             GPIO.output(device_pins['pump-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['pump-in2'], GPIO.LOW)  # Set IN2 LOW for forward direction
+            GPIO.output(device_pins['pump-in2'], GPIO.LOW)
             if state == 'off':
-                pwm_instances['pump-ena'].ChangeDutyCycle(0)  # Stop PWM when toggled off
+                pwm_instances['pump-ena'].ChangeDutyCycle(0)
+                current_pwm_duty_cycle['pump-ena'] = 0
         elif device == 'ito-top':
-            # Handle ITO top motor driver
             GPIO.output(device_pins['ito-top-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['ito-top-in2'], GPIO.LOW)  # Set IN2 LOW for forward direction
+            GPIO.output(device_pins['ito-top-in2'], GPIO.LOW)
             if state == 'off':
-                pwm_instances['ito-top-ena'].ChangeDutyCycle(0)  # Stop PWM when toggled off
+                pwm_instances['ito-top-ena'].ChangeDutyCycle(0)
+                current_pwm_duty_cycle['ito-top-ena'] = 0
         elif device == 'ito-bottom':
-            # Handle ITO bottom motor driver
             GPIO.output(device_pins['ito-bottom-in3'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['ito-bottom-in4'], GPIO.LOW)  # Set IN4 LOW for forward direction
+            GPIO.output(device_pins['ito-bottom-in4'], GPIO.LOW)
             if state == 'off':
-                pwm_instances['ito-bottom-ena'].ChangeDutyCycle(0)  # Stop PWM when toggled off
+                pwm_instances['ito-bottom-ena'].ChangeDutyCycle(0)
+                current_pwm_duty_cycle['ito-bottom-ena'] = 0
         else:
-            # Handle simple relay devices
             pin = device_pins[device]
             GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
 
@@ -126,13 +131,13 @@ def set_device_speed():
     try:
         data = request.json
         device = data.get('device')
-        speed = int(data.get('speed'))  # Speed should be an integer 0-100
+        speed = int(data.get('speed'))
 
         if device not in pwm_pins:
             return {'error': f"Device {device} does not support speed control"}, 400
 
-        # Adjust the PWM duty cycle
         pwm_instances[device].ChangeDutyCycle(speed)
+        current_pwm_duty_cycle[device] = speed  # Store current duty cycle in memory
 
         return {'status': 'success', 'device': device, 'speed': speed}
     except Exception as e:
@@ -227,9 +232,9 @@ def setup():
     device_states['ito-bottom'] = 'on' if GPIO.input(device_pins['ito-bottom-in3']) == GPIO.HIGH else 'off'
 
     # Read the actual PWM speeds
-    device_states['pump_speed'] = pwm_instances['pump-ena'].ChangeDutyCycle
-    device_states['ito_top_speed'] = pwm_instances['ito-top-ena'].ChangeDutyCycle
-    device_states['ito_bottom_speed'] = pwm_instances['ito-bottom-ena'].ChangeDutyCycle
+    device_states['pump_speed'] = current_pwm_duty_cycle['pump-ena']
+    device_states['ito_top_speed'] = current_pwm_duty_cycle['ito-top-ena']
+    device_states['ito_bottom_speed'] = current_pwm_duty_cycle['ito-bottom-ena']
 
     # Pass GPIO states and device states to the template
     return render_template(

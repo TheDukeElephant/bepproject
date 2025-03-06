@@ -26,7 +26,7 @@ from config import Config  # Updated import
 # output file kiezen naam
 OUTPUT_FILE = "sensor_data.csv"
 
-
+#test3
 threads_started = False
 
 CONTROL_INTERVAL_TEMP = 10

@@ -18,7 +18,6 @@ from PIL import Image, ImageDraw, ImageFont
 import csv
 import subprocess
 import RPi.GPIO as GPIO
-from . import DFRobot_Oxygen
 from .DFRobot_Oxygen import DFRobot_Oxygen_IIC  # Updated import
 import logging
 from config import Config  # Updated import
@@ -117,7 +116,7 @@ def read_humidity():
 def read_oxygen():
     try:
         if oxygen_sensor:
-            oxygen_value = oxygen_sensor.get_oxygen_concentration()
+            oxygen_value = oxygen_sensor.get_oxygen_data(10)  # Use get_oxygen_data method
             return oxygen_value
         else:
             raise ValueError("Oxygen sensor not initialized")

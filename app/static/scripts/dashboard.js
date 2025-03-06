@@ -148,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('o2').textContent = o2DisplayValue;
 
         // Update temperature values and chart
-        const temperatures = data.temperatures;
         document.getElementById('temp1').textContent = (temperatures[0] > 950) ? 'Not connected' : (temperatures[0] + ' °C');
         document.getElementById('temp2').textContent = (temperatures[1] > 950) ? 'Not connected' : (temperatures[1] + ' °C');
         document.getElementById('temp3').textContent = (temperatures[2] > 950) ? 'Not connected' : (temperatures[2] + ' °C');

@@ -266,6 +266,12 @@ def background_sensor_read():
             
             # gemid temp
             average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
+            
+            # Add a fifth temperature value (e.g., average of all sensors or a specific sensor value)
+            if len(temperatures) >= 5:
+                fifth_temperature = temperatures[4]
+            else:
+                fifth_temperature = average_temperature  # Use average as fallback
 
             # elke 10 sec controlleer de temperatuur	
             current_time = time.time()
@@ -291,7 +297,7 @@ def background_sensor_read():
                 'timestamp': int(time.time()),
                 'co2': co2_value,
                 'o2': o2_value,
-                'temperatures': [round(temp, 2) for temp in temperatures],
+                'temperatures': [round(temp, 2) for temp in temperatures] + [round(fifth_temperature, 2)],
                 'humidity': round(humidity, 2)
             }
 
@@ -337,7 +343,7 @@ def background_sensor_read():
                 'timestamp': int(time.time()),
                 'co2': round(Config.FALLBACK_CO2 / 10000, 2),
                 'o2': Config.FALLBACK_O2,
-                'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors),
+                'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors) + [round(FALLBACK_TEMPERATURE, 2)],
                 'humidity': round(FALLBACK_HUMIDITY, 2)
             }
             save_to_file(fallback_data)  # fallback data moet ook gesaved worden

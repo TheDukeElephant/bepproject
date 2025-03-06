@@ -20,7 +20,8 @@ import subprocess
 import RPi.GPIO as GPIO
 from . import DFRobot_Oxygen
 import logging
-from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2
+#from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2
+from config import Config  # Updated import
 
 # output file kiezen naam
 OUTPUT_FILE = "sensor_data.csv"
@@ -173,10 +174,10 @@ def control_temperature(average_temperature):
     """
     temperature_pin = 27  
 
-    if average_temperature < TEMP_LOWER_BOUND:
+    if average_temperature < Config.TEMP_LOWER_BOUND:
         GPIO.output(temperature_pin, GPIO.LOW)  
         logging.info("Temperature heating turned ON")
-    elif average_temperature > TEMP_UPPER_BOUND:
+    elif average_temperature > Config.TEMP_UPPER_BOUND:
         GPIO.output(temperature_pin, GPIO.HIGH) 
         logging.info("Temperature heating turned OFF")
 
@@ -217,7 +218,7 @@ def co2_control_thread():
             if ser is not None:
                 co2_value = get_co2_value_from_serial(ser)
             else:
-                co2_value = FALLBACK_CO2
+                co2_value = Config.FALLBACK_CO2
 
             control_co2(co2_value)
             time.sleep(CONTROL_INTERVAL_CO2)  
@@ -247,8 +248,8 @@ def background_sensor_read():
                 ser = initialize_serial()
 
             # fallbacks
-            co2_value = FALLBACK_CO2
-            o2_value = FALLBACK_O2  
+            co2_value = Config.FALLBACK_CO2
+            o2_value = Config.FALLBACK_O2  
             temperatures = [read_temperature(sensor) for sensor in sensors]
             humidity = read_humidity()
             
@@ -323,8 +324,8 @@ def background_sensor_read():
             # data moet altijd een fallback hebben voor als een sensor breekt.
             fallback_data = {
                 'timestamp': int(time.time()),
-                'co2': round(FALLBACK_CO2 / 10000, 2),
-                'o2': FALLBACK_O2,
+                'co2': round(Config.FALLBACK_CO2 / 10000, 2),
+                'o2': Config.FALLBACK_O2,
                 'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors),
                 'humidity': round(FALLBACK_HUMIDITY, 2)
             }
@@ -342,7 +343,7 @@ def get_co2_value_from_serial(ser):
         return process_co2_response(co2_response)
     except Exception as e:
         logging.error(f"Error reading CO2 sensor: {e}")
-        return FALLBACK_CO2
+        return Config.FALLBACK_CO2
 
 
 def process_co2_response(response):
@@ -352,7 +353,7 @@ def process_co2_response(response):
             return round(co2_value_ppm / 10000, 2)
     except Exception as e:
         logging.error("Error processing CO2 response: %s", e)
-    return FALLBACK_CO2
+    return Config.FALLBACK_CO2
 
 temperatures = [read_temperature(sensor) for sensor in sensors]
 # gemiddelde temperaturen berekenen want handig voor het project.

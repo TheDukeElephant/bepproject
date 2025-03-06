@@ -226,6 +226,11 @@ def setup():
     device_states['ito-top'] = 'on' if GPIO.input(device_pins['ito-top-in1']) == GPIO.HIGH else 'off'
     device_states['ito-bottom'] = 'on' if GPIO.input(device_pins['ito-bottom-in3']) == GPIO.HIGH else 'off'
 
+    # Read the actual PWM speeds
+    device_states['pump_speed'] = pwm_instances['pump-ena'].ChangeDutyCycle
+    device_states['ito_top_speed'] = pwm_instances['ito-top-ena'].ChangeDutyCycle
+    device_states['ito_bottom_speed'] = pwm_instances['ito-bottom-ena'].ChangeDutyCycle
+
     # Pass GPIO states and device states to the template
     return render_template(
         'setup.html',

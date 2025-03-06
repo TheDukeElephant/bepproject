@@ -1,40 +1,25 @@
-# bepproject
+# BEP Project
 
 This project is based on a Flask framework Python app.
 It will enable control of a box which can alter the temperature, humidity, CO2 levels, and O2 levels of a box designed for carrying living cells.
 
-## Installation
+## Setup
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/bepproject.git
-    cd bepproject
-    ```
+1. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+2. Configure thresholds in `config.py`.
+3. Run the Flask application:
+   ```
+   python run.py
+   ```
+4. Navigate to http://<your-pi-ip>:5000
 
-2. Create a virtual environment and activate it:
-    ```sh
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+## Notes
 
-3. Install the required packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-1. Initialize the database:
-    ```sh
-    python setup.py
-    ```
-
-2. Run the application (use sudo if necessary):
-    ```sh
-    sudo python run.py
-    ```
-
-3. Access the application at `http://localhost:5000`.
+- Old scripts in `app/old` are deprecated.
+- Logs are stored to console using a consistent format.
 
 ## Features
 

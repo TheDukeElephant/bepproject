@@ -20,6 +20,8 @@ import subprocess
 import RPi.GPIO as GPIO
 from grove.grove_oxygen_sensor import GroveOxygenSensor  # Import the Grove Oxygen Sensor library
 from DFRobot_Oxygen_Sensor import DFRobot_Oxygen_Sensor
+import logging
+from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2
 
 # output file kiezen naam
 OUTPUT_FILE = "sensor_data.csv"
@@ -31,8 +33,6 @@ CONTROL_INTERVAL_TEMP = 10
 
 CONTROL_INTERVAL_CO2 = 30
 TIME_CO2_SOLENOID_ON = 0.1
-FALLBACK_CO2 = 40 
-FALLBACK_O2 = 23 
 FALLBACK_TEMPERATURE = 960 
 FALLBACK_HUMIDITY = 101.0  
 
@@ -169,18 +169,22 @@ def save_to_file(sensor_data):
 initialize_output_file()
 
 def control_temperature(average_temperature):
-    """Turn the temperature on or off based on temperature."""
+    """
+    Turns the heater on or off based on temperature bounds from config.
+    """
     temperature_pin = 27  
 
-    if average_temperature < 36.9:
+    if average_temperature < TEMP_LOWER_BOUND:
         GPIO.output(temperature_pin, GPIO.LOW)  
-        print("Temperature heating turned ON")
-    elif average_temperature > 37.1:
+        logging.info("Temperature heating turned ON")
+    elif average_temperature > TEMP_UPPER_BOUND:
         GPIO.output(temperature_pin, GPIO.HIGH) 
-        print("Temperature heating turned OFF")
+        logging.info("Temperature heating turned OFF")
 
 def control_co2(co2_value):
-    """Turn the co2 on or off based on co2."""
+    """
+    Activates CO2 solenoid for short bursts if below threshold.
+    """
     temperature_pin = 4  
 
     if co2_value > 0.01 and co2_value < 5:
@@ -348,7 +352,7 @@ def process_co2_response(response):
             co2_value_ppm = int(response[1:].trip()) * 10
             return round(co2_value_ppm / 10000, 2)
     except Exception as e:
-        print(f"Error processing CO2 response: {e}")
+        logging.error("Error processing CO2 response: %s", e)
     return FALLBACK_CO2
 
 temperatures = [read_temperature(sensor) for sensor in sensors]

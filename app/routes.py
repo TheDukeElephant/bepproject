@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 import RPi.GPIO as GPIO
 import atexit
 import logging
+from config import CO2_THRESHOLD, O2_THRESHOLD
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -111,10 +112,10 @@ def toggle_device():
             pin = device_pins[device]
             GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
 
-        logging.info(f"Device {device} toggled to {'ON' if state == 'on' else 'OFF'}")
+        logging.info("Device %s toggled to %s", device, state)
         return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:
-        logging.error(f"Error toggling device: {e}")
+        logging.error("Error toggling device: %s", e)
         return {'error': str(e)}, 500
 
 
@@ -168,6 +169,10 @@ def setup():
         o2_threshold = request.form.get('o2_threshold')
         temp_threshold = request.form.get('temp_threshold')
         humidity_threshold = request.form.get('humidity_threshold')
+
+        # Example usage of config constants:
+        if float(co2_threshold) > CO2_THRESHOLD:
+            logging.warning("CO2 threshold set above recommended limit.")
 
         try:
             with open(config_file_path, 'w') as config_file:

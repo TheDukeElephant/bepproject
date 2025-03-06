@@ -1,3 +1,8 @@
+"""
+DEPRECATED: Use 'run.py' or updated scripts instead.
+Retained for historical reference only.
+"""
+
 import serial
 import time
 

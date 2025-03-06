@@ -2,9 +2,10 @@ from app import create_app, socketio
 from app.background import background_sensor_read
 from app.database import init_db
 from wifi_monitor import start_wifi_monitor
+from config import LOG_FORMAT
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 
 # Initialize the Flask application
 app = create_app()

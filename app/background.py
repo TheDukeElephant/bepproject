@@ -314,7 +314,7 @@ def background_sensor_read():
             # als niet in range, zorg dat er not connected staat voor het gemak van de gebruiker
             display_temp = "Not connected" if sensor_data['temperatures'][4] > 950 else f"{sensor_data['temperatures'][4]} C"
             display_humidity = "Not connected" if sensor_data['humidity'] > 100 else f"{sensor_data['humidity']} %"
-            display_o2 = "Not connected" if sensor_data['o2'] > 21 else f"{sensor_data['o2']} %"
+            display_o2 = "Not connected" if sensor_data['o2'] > 21.5 else f"{sensor_data['o2']} %"
             display_co2 = "Not connected" if sensor_data['co2'] > 21 else f"{sensor_data['co2']} %"
 
             # oled scherm aanzetten met de goede library en alvast functies aansturen die ip adres een wifi ssid krijgen

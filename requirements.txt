@@ -5,5 +5,7 @@ flask-login
 werkzeug==2.3.3
 bcrypt==4.0.1
 eventlet==0.33.3
+seeed-python-grove==0.0.1  # Add this line
+DFRobot_Oxygen_Sensor
 #sqlite3  
 # This is part of Python's standard library; you don't need to include it unless you're using a wrapper library.

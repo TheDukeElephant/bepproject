@@ -17,7 +17,7 @@ device_pins = {
     'argon-solenoid': 17,      # GPIO 17: Relay 2 for Argon solenoid
     'humidifier': 27,          # GPIO 27: Relay 3 for humidifier
     'humidifier2': 24,          # GPIO 27: Relay 3 for humidifier
-    
+    'oxygen-sensor': 5,        # GPIO pin for the oxygen sensor
 
     # Motor driver connections for pump
     #'pump': 20,

@@ -18,6 +18,8 @@ from PIL import Image, ImageDraw, ImageFont
 import csv
 import subprocess
 import RPi.GPIO as GPIO
+from grove.grove_oxygen_sensor import GroveOxygenSensor  # Import the Grove Oxygen Sensor library
+from DFRobot_Oxygen_Sensor import DFRobot_Oxygen_Sensor
 
 # output file kiezen naam
 OUTPUT_FILE = "sensor_data.csv"
@@ -56,7 +58,8 @@ sensors = [adafruit_max31865.MAX31865(spi, digitalio.DigitalInOut(cs), rtd_nomin
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  
 
-
+# Initialize the DFRobot Gravity Oxygen Sensor
+oxygen_sensor = DFRobot_Oxygen_Sensor(busio.I2C(board.SCL, board.SDA), 0x73)
 
 
 def get_ip_address():
@@ -104,10 +107,10 @@ def read_humidity():
 
 def read_oxygen():
     try:
-        oxygen_value = oxygen_sensor_pin.value
+        oxygen_value = oxygen_sensor.get_oxygen_concentration()
         return oxygen_value
     except Exception as e:
-        print(f"Error reading oxygen from MIX8410: {e}")
+        print(f"Error reading oxygen from DFRobot Gravity Oxygen Sensor: {e}")
         return FALLBACK_O2
     
 def standby_oled():
@@ -265,6 +268,9 @@ def background_sensor_read():
                 control_co2(co2_value)
                 last_temperature_control_time_co2 = current_time
 
+            # Read oxygen value from the Grove Oxygen Sensor
+            o2_value = read_oxygen()
+
             # data voordat emit word in array
             sensor_data = {
                 'timestamp': int(time.time()),
@@ -339,7 +345,7 @@ def get_co2_value_from_serial(ser):
 def process_co2_response(response):
     try:
         if response.startswith("Z") and len(response) > 1:
-            co2_value_ppm = int(response[1:].strip()) * 10
+            co2_value_ppm = int(response[1:].trip()) * 10
             return round(co2_value_ppm / 10000, 2)
     except Exception as e:
         print(f"Error processing CO2 response: {e}")

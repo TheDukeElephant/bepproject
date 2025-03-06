@@ -18,7 +18,6 @@ from PIL import Image, ImageDraw, ImageFont
 import csv
 import subprocess
 import RPi.GPIO as GPIO
-from grove.grove_oxygen_sensor import GroveOxygenSensor  # Import the Grove Oxygen Sensor library
 from DFRobot_Oxygen_Sensor import DFRobot_Oxygen_Sensor
 import logging
 from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2

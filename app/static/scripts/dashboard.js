@@ -46,47 +46,17 @@ document.addEventListener("DOMContentLoaded", () => {
         options: { responsive: true }
     });
 
-    // Set up chart data for Temperature
+    // Adjust temperature chart so it only has 1 dataset (the average)
     const tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), {
         type: 'line',
         data: {
             labels: [],
             datasets: [
                 {
-                    label: 'Top ITO (°C)',
+                    label: 'Chamber Temp (°C)',
                     data: [],
                     borderColor: 'rgba(255, 99, 132, 1)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                },
-                {
-                    label: 'Bottom ITO (°C)',
-                    data: [],
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                },
-                {
-                    label: 'Middle Chamber (°C)',
-                    data: [],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                },
-                {
-                    label: 'Middle Chamber 2 (°C)',
-                    data: [],
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                },
-                {
-                    label: 'Inside Well-plate (°C)',
-                    data: [],
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                },
-                {
-                    label: 'AVG Chamber (°C)',
-                    data: [],
-                    borderColor: 'rgb(124, 249, 110)',
-                    backgroundColor: 'rgba(143, 251, 113, 0.2)',
                 }
             ]
         },
@@ -153,17 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         document.getElementById('o2').textContent = o2DisplayValue;
 
-        // Update Temperature values and chart
-        temperatures.forEach((temp, index) => {
-            let tempDisplayValue;
-            if (typeof temp === 'number' && temp <= 950) {
-                tempDisplayValue = `${temp} °C`;
-                updateChart(tempChart, now, temp, index);
-            } else {
-                tempDisplayValue = 'Not connected';
-            }
-            document.getElementById(`temp${index + 1}`).textContent = tempDisplayValue;
-        });
+        // Now we only update tempChart with sensorData.temperatures[lastIndex or single index]
+        const avgTemp = data.temperatures[data.temperatures.length - 1] || 0;
+        document.getElementById('temp6').textContent = (avgTemp > 950) ? 'Not connected' : (avgTemp + ' °C');
+        updateChart(tempChart, now, avgTemp, 0);
 
         // Update Humidity value and chart
         let humidityDisplayValue;

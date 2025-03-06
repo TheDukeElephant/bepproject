@@ -57,77 +57,40 @@
 
         <div class="controls-container">
             <h2>Controls</h2>
-            
+            <!-- Pump Toggle Only -->
             <div class="control">
                 <label for="pump-toggle">Pump:</label>
-                <div class="slider-control-wrapper">
-                    <div class="slidecontainer">
-                        <input type="range" min="1" max="100" value="{{ device_states['pump_speed'] }}" class="slider" id="setpumpspeed" name="pump_speed" oninput="updateSliderValue('pumpspeed', this.value)">
-                        <span id="pumpspeed-value" class="slider-value">{{ device_states['pump_speed'] }}</span>
-                    </div>
-                    <button id="pump-toggle" class="toggle-button {{ 'on' if device_states['pump'] == 'on' else 'off' }}" onclick="toggleDevice('pump')">
-                        {{ 'On' if device_states['pump'] == 'on' else 'Off' }}
-                    </button>
-                    <input type="hidden" id="pump_state" name="pump_state" value="{{ device_states['pump'] }}">
-                </div>
+                <button id="pump-toggle" class="toggle-button {{ 'on' if device_states['pump'] == 'on' else 'off' }}" 
+                        onclick="toggleDevice('pump')">
+                    {{ 'On' if device_states['pump'] == 'on' else 'Off' }}
+                </button>
+                <input type="hidden" id="pump_state" name="pump_state" value="{{ device_states['pump'] }}">
             </div>
-            
+
             <div class="control">
                 <label for="co2-solenoid-toggle">CO₂ Solenoid:</label>
-                <button id="co2-solenoid-toggle" class="toggle-button {{ 'on' if relay_states['co2-solenoid'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('co2-solenoid')">
+                <button id="co2-solenoid-toggle" class="toggle-button {{ 'on' if relay_states['co2-solenoid'] == GPIO_LOW else 'off' }}"
+                        onclick="toggleDevice('co2-solenoid')">
                     {{ 'On' if relay_states['co2-solenoid'] == GPIO_LOW else 'Off' }}
                 </button>
             </div>
-            
+
             <div class="control">
                 <label for="argon-solenoid-toggle">Argon Solenoid:</label>
-                <button id="argon-solenoid-toggle" class="toggle-button {{ 'on' if relay_states['argon-solenoid'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('argon-solenoid')">
+                <button id="argon-solenoid-toggle" class="toggle-button {{ 'on' if relay_states['argon-solenoid'] == GPIO_LOW else 'off' }}"
+                        onclick="toggleDevice('argon-solenoid')">
                     {{ 'On' if relay_states['argon-solenoid'] == GPIO_LOW else 'Off' }}
                 </button>
             </div>
-            
+
+            <!-- Renamed humidifier to ITO Heating, removed "humidifier2" -->
             <div class="control">
-                <label for="ito-top-toggle">Heating Element Top:</label>
-                <div class="slider-control-wrapper">
-                    <div class="slidecontainer">
-                        <input type="range" min="1" max="100" value="50" class="slider" id="settopito" oninput="updateSliderValue('topito', this.value)">
-                        <span id="topito-value" class="slider-value">50</span>
-                    </div>
-                    <button id="ito-top-toggle" class="toggle-button {{ 'on' if relay_states['ito-top'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('ito-top')">
-                        {{ 'On' if relay_states['ito-top'] == GPIO_LOW else 'Off' }}
-                    </button>
-                </div>
-            </div>
-            
-            <div class="control">
-                <label for="ito-bottom-toggle">Heating Element Bottom:</label>
-                <div class="slider-control-wrapper">
-                    <div class="slidecontainer">
-                        <input type="range" min="1" max="100" value="50" class="slider" id="setbottomito" oninput="updateSliderValue('bottomito', this.value)">
-                        <span id="bottomito-value" class="slider-value">50</span>
-                    </div>
-                    <button id="ito-bottom-toggle" class="toggle-button {{ 'on' if relay_states['ito-bottom'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('ito-bottom')">
-                        {{ 'On' if relay_states['ito-bottom'] == GPIO_LOW else 'Off' }}
-                    </button>
-                </div>
-            </div>
-            
-            <div class="control">
-                <label for="humidifier-toggle">Humidifier:</label>
-                <button id="humidifier-toggle" class="toggle-button {{ 'on' if relay_states['humidifier'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('humidifier')">
-                    {{ 'On' if relay_states['humidifier'] == GPIO_LOW else 'Off' }}
+                <label for="ito-heating-toggle">ITO Heating:</label>
+                <button id="ito-heating-toggle" class="toggle-button {{ 'on' if relay_states['ito-heating'] == GPIO_LOW else 'off' }}"
+                        onclick="toggleDevice('ito-heating')">
+                    {{ 'On' if relay_states['ito-heating'] == GPIO_LOW else 'Off' }}
                 </button>
             </div>
-            <div class="control">
-                <label for="humidifier2-toggle">Humidifier 2:</label>
-                <button id="humidifier2-toggle" class="toggle-button {{ 'on' if relay_states['humidifier2'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('humidifier2')">
-                    {{ 'On' if relay_states['humidifier2'] == GPIO_LOW else 'Off' }}
-                </button>
-            </div>
-            
-            
-            
-            
         </div>
 
         <!-- Button to go back to the Dashboard -->

@@ -35,7 +35,7 @@ CONTROL_INTERVAL_CO2 = 30
 TIME_CO2_SOLENOID_ON = 0.1
 FALLBACK_TEMPERATURE = 960 
 FALLBACK_HUMIDITY = 101.0  
-FALLBACK_OXYGEN = 0.0  # Add fallback oxygen value
+FALLBACK_OXYGEN = 22.0  # Add fallback oxygen value
 
 
 data_buffer = deque(maxlen=10) 

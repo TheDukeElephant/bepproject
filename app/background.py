@@ -19,6 +19,7 @@ import csv
 import subprocess
 import RPi.GPIO as GPIO
 from . import DFRobot_Oxygen
+from .DFRobot_Oxygen import DFRobot_Oxygen_IIC  # Updated import
 import logging
 #from config import TEMP_LOWER_BOUND, TEMP_UPPER_BOUND, FALLBACK_CO2, FALLBACK_O2
 from config import Config  # Updated import
@@ -59,7 +60,7 @@ DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  
 
 # Initialize the DFRobot Gravity Oxygen Sensor
-oxygen_sensor = DFRobot_Oxygen_Sensor(busio.I2C(board.SCL, board.SDA), 0x73)
+oxygen_sensor = DFRobot_Oxygen_IIC(busio.I2C(board.SCL, board.SDA), 0x73)  # Updated class name
 
 
 def get_ip_address():

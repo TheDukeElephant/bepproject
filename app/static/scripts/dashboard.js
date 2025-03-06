@@ -148,11 +148,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('o2').textContent = o2DisplayValue;
 
         // Update temperature values and chart
-        document.getElementById('temp1').textContent = (temperatures[0] > 950) ? 'Not connected' : (temperatures[0] + ' °C');
-        document.getElementById('temp2').textContent = (temperatures[1] > 950) ? 'Not connected' : (temperatures[1] + ' °C');
-        document.getElementById('temp3').textContent = (temperatures[2] > 950) ? 'Not connected' : (temperatures[2] + ' °C');
-        document.getElementById('temp4').textContent = (temperatures[3] > 950) ? 'Not connected' : (temperatures[3] + ' °C');
-        document.getElementById('temp6').textContent = (temperatures[4] > 950) ? 'Not connected' : (temperatures[4] + ' °C');
+        document.getElementById('temp1').textContent = (temperatures[0] > 950 || temperatures[0] < -242) ? 'Not connected' : (temperatures[0] + ' °C');
+        document.getElementById('temp2').textContent = (temperatures[1] > 950 || temperatures[1] < -242) ? 'Not connected' : (temperatures[1] + ' °C');
+        document.getElementById('temp3').textContent = (temperatures[2] > 950 || temperatures[2] < -242) ? 'Not connected' : (temperatures[2] + ' °C');
+        document.getElementById('temp4').textContent = (temperatures[3] > 950 || temperatures[3] < -242) ? 'Not connected' : (temperatures[3] + ' °C');
+        document.getElementById('temp6').textContent = (temperatures[4] > 950 || temperatures[4] < -242) ? 'Not connected' : (temperatures[4] + ' °C');
         updateChart(tempChart, now, temperatures[0], 0);
         updateChart(tempChart, now, temperatures[1], 1);
         updateChart(tempChart, now, temperatures[2], 2);

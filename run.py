@@ -3,7 +3,7 @@ try:
     from app.background import background_sensor_read
     from app.database import init_db
     from wifi_monitor import start_wifi_monitor
-    from config import LOG_FORMAT  # Updated import
+    from config import Config  # Updated import
 except ModuleNotFoundError as e:
     print(f"Error importing modules: {e}")
     LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
@@ -13,7 +13,7 @@ except ModuleNotFoundError as e:
 
 import logging
 
-logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
+logging.basicConfig(format=Config.LOG_FORMAT, level=logging.INFO)  # Use Config.LOG_FORMAT
 
 # Initialize the Flask application
 app = create_app()

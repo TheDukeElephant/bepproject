@@ -12,7 +12,7 @@ class Config:
     FALLBACK_CO2 = 6
     FALLBACK_O2 = 22
 
-    LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+    LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"  # Ensure LOG_FORMAT is defined
     
     @classmethod
     def init_logging(cls):

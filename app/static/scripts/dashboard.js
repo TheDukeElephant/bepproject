@@ -46,17 +46,41 @@ document.addEventListener("DOMContentLoaded", () => {
         options: { responsive: true }
     });
 
-    // Adjust temperature chart so it only has 1 dataset (the average)
+    // Adjust temperature chart so it has 5 datasets (one for each temperature)
     const tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), {
         type: 'line',
         data: {
             labels: [],
             datasets: [
                 {
-                    label: 'Chamber Temp (°C)',
+                    label: 'Temperature 1 (°C)',
                     data: [],
                     borderColor: 'rgba(255, 99, 132, 1)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                },
+                {
+                    label: 'Temperature 2 (°C)',
+                    data: [],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                },
+                {
+                    label: 'Temperature 3 (°C)',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                },
+                {
+                    label: 'Temperature 4 (°C)',
+                    data: [],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                },
+                {
+                    label: 'Chamber Temp (°C)',
+                    data: [],
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
                 }
             ]
         },
@@ -130,7 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('temp3').textContent = (temperatures[2] > 950) ? 'Not connected' : (temperatures[2] + ' °C');
         document.getElementById('temp4').textContent = (temperatures[3] > 950) ? 'Not connected' : (temperatures[3] + ' °C');
         document.getElementById('temp6').textContent = (temperatures[4] > 950) ? 'Not connected' : (temperatures[4] + ' °C');
-        updateChart(tempChart, now, temperatures[4], 0);
+        updateChart(tempChart, now, temperatures[0], 0);
+        updateChart(tempChart, now, temperatures[1], 1);
+        updateChart(tempChart, now, temperatures[2], 2);
+        updateChart(tempChart, now, temperatures[3], 3);
+        updateChart(tempChart, now, temperatures[4], 4);
 
         // Update Humidity value and chart
         let humidityDisplayValue;

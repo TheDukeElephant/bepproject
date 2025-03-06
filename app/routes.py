@@ -221,6 +221,11 @@ def setup():
     except Exception as e:
         flash(f"Error reading configuration: {e}", "error")
 
+    # Update device states based on actual GPIO pin states
+    device_states['pump'] = 'on' if GPIO.input(device_pins['pump-in1']) == GPIO.HIGH else 'off'
+    device_states['ito-top'] = 'on' if GPIO.input(device_pins['ito-top-in1']) == GPIO.HIGH else 'off'
+    device_states['ito-bottom'] = 'on' if GPIO.input(device_pins['ito-bottom-in3']) == GPIO.HIGH else 'off'
+
     # Pass GPIO states and device states to the template
     return render_template(
         'setup.html',

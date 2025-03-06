@@ -4,6 +4,12 @@ function toggleDevice(deviceId) {
     const isOn = button.classList.toggle('on'); // Toggle the button's 'on' state
     button.textContent = isOn ? 'On' : 'Off'; // Update the button's label
 
+    // Update the hidden input field for the device state
+    const stateInput = document.getElementById(`${deviceId}_state`);
+    if (stateInput) {
+        stateInput.value = isOn ? 'on' : 'off';
+    }
+
     console.log(`Toggling device: ${deviceId}, State: ${isOn ? 'on' : 'off'}`); // Debugging log
 
     // Send the toggle state to the server

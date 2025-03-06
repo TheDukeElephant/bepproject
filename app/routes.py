@@ -157,11 +157,21 @@ def dashboard():
 @main_blueprint.route('/setup', methods=['GET', 'POST'])
 @login_required
 def setup():
-    """Handle the setup page for configuring thresholds."""
+    """Handle the setup page for configuring thresholds and device states."""
     config_file_path = 'config.txt'
 
     # Relay states to synchronize UI with hardware
     relay_states = {device: GPIO.input(pin) for device, pin in device_pins.items() if 'solenoid' in device or 'humidifier' in device or 'humidifier2' in device}
+
+    # Initialize device states and speeds
+    device_states = {
+        'pump': 'off',
+        'pump_speed': 50,
+        'ito-top': 'off',
+        'ito-top_speed': 50,
+        'ito-bottom': 'off',
+        'ito-bottom_speed': 50
+    }
 
     if request.method == 'POST':
         # Handle the setup form submission
@@ -170,24 +180,27 @@ def setup():
         temp_threshold = request.form.get('temp_threshold')
         humidity_threshold = request.form.get('humidity_threshold')
 
-        # Example usage of config constants:
-        if float(co2_threshold) > Config.CO2_THRESHOLD:  # Updated usage
-            logging.warning("CO2 threshold set above recommended limit.")
-
+        # Save thresholds and device states to config file
         try:
             with open(config_file_path, 'w') as config_file:
                 config_file.write(f"co2_threshold={round(float(co2_threshold), 1)}\n")
                 config_file.write(f"o2_threshold={round(float(o2_threshold), 1)}\n")
                 config_file.write(f"temp_threshold={round(float(temp_threshold), 1)}\n")
                 config_file.write(f"humidity_threshold={round(float(humidity_threshold), 1)}\n")
-            flash("Thresholds saved successfully!", "success")
+                config_file.write(f"pump_state={request.form.get('pump_state')}\n")
+                config_file.write(f"pump_speed={request.form.get('pump_speed')}\n")
+                config_file.write(f"ito_top_state={request.form.get('ito_top_state')}\n")
+                config_file.write(f"ito_top_speed={request.form.get('ito_top_speed')}\n")
+                config_file.write(f"ito_bottom_state={request.form.get('ito_bottom_state')}\n")
+                config_file.write(f"ito_bottom_speed={request.form.get('ito_bottom_speed')}\n")
+            flash("Settings saved successfully!", "success")
         except Exception as e:
-            flash(f"Error saving thresholds: {e}", "error")
+            flash(f"Error saving settings: {e}", "error")
 
         # Redirect back to the dashboard after form submission
         return redirect(url_for('main.dashboard'))
 
-    # For GET requests, load existing thresholds from config.txt
+    # For GET requests, load existing thresholds and device states from config.txt
     thresholds = {
         "co2_threshold": 0.0,
         "o2_threshold": 0.0,
@@ -199,18 +212,21 @@ def setup():
         with open(config_file_path, 'r') as config_file:
             for line in config_file:
                 key, value = line.strip().split('=')
-                if key in {"co2_threshold", "o2_threshold", "temp_threshold", "humidity_threshold"}:
+                if key in thresholds:
                     thresholds[key] = round(float(value), 1)  # Round to 1 decimal place
+                elif key in device_states:
+                    device_states[key] = value if 'state' in key else int(value)
     except FileNotFoundError:
         flash("No configuration file found. Please set thresholds.", "info")
     except Exception as e:
         flash(f"Error reading configuration: {e}", "error")
 
-    # Pass GPIO states to the template
+    # Pass GPIO states and device states to the template
     return render_template(
         'setup.html',
         thresholds=thresholds,
         relay_states=relay_states,
+        device_states=device_states,
         GPIO_LOW=GPIO.LOW,
         GPIO_HIGH=GPIO.HIGH
     )

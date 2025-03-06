@@ -62,12 +62,13 @@
                 <label for="pump-toggle">Pump:</label>
                 <div class="slider-control-wrapper">
                     <div class="slidecontainer">
-                        <input type="range" min="1" max="100" value="50" class="slider" id="setpumpspeed" oninput="updateSliderValue('pumpspeed', this.value)">
-                        <span id="pumpspeed-value" class="slider-value">50</span>
+                        <input type="range" min="1" max="100" value="{{ device_states['pump_speed'] }}" class="slider" id="setpumpspeed" name="pump_speed" oninput="updateSliderValue('pumpspeed', this.value)">
+                        <span id="pumpspeed-value" class="slider-value">{{ device_states['pump_speed'] }}</span>
                     </div>
-                    <button id="pump-toggle" class="toggle-button {{ 'on' if relay_states['pump'] == GPIO_LOW else 'off' }}" onclick="toggleDevice('pump')">
-                        {{ 'On' if relay_states['pump'] == GPIO_LOW else 'Off' }}
+                    <button id="pump-toggle" class="toggle-button {{ 'on' if device_states['pump'] == 'on' else 'off' }}" onclick="toggleDevice('pump')">
+                        {{ 'On' if device_states['pump'] == 'on' else 'Off' }}
                     </button>
+                    <input type="hidden" id="pump_state" name="pump_state" value="{{ device_states['pump'] }}">
                 </div>
             </div>
             

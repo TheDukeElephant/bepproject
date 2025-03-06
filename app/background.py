@@ -36,6 +36,7 @@ CONTROL_INTERVAL_CO2 = 30
 TIME_CO2_SOLENOID_ON = 0.1
 FALLBACK_TEMPERATURE = 960 
 FALLBACK_HUMIDITY = 101.0  
+FALLBACK_OXYGEN = 0.0  # Add fallback oxygen value
 
 
 data_buffer = deque(maxlen=10) 
@@ -60,7 +61,7 @@ DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4  
 
 # Initialize the DFRobot Gravity Oxygen Sensor
-oxygen_sensor = DFRobot_Oxygen_IIC(busio.I2C(board.SCL, board.SDA), 0x73)  # Updated class name
+oxygen_sensor = DFRobot_Oxygen_IIC(1, 0x73)  # Updated to use bus number 1
 
 
 def get_ip_address():
@@ -112,7 +113,7 @@ def read_oxygen():
         return oxygen_value
     except Exception as e:
         logging.error(f"Error reading oxygen from DFRobot Gravity Oxygen Sensor: {e}")
-        return FALLBACK_O2
+        return FALLBACK_OXYGEN  # Use fallback oxygen value
     
 def standby_oled():
 

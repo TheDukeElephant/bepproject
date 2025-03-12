@@ -116,8 +116,12 @@ def read_humidity():
 def read_oxygen():
     try:
         if oxygen_sensor:
-            oxygen_value = oxygen_sensor.get_oxygen_data(10)  # Use get_oxygen_data method
-            return oxygen_value
+            # Check if the sensor is connected by attempting a read
+            oxygen_value = oxygen_sensor.get_oxygen_data(10)
+            if oxygen_value is not None:
+                return oxygen_value
+            else:
+                raise ValueError("Failed to read oxygen data")
         else:
             raise ValueError("Oxygen sensor not initialized")
     except Exception as e:

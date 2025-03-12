@@ -24,6 +24,7 @@ from config import Config  # Updated import
 
 # output file kiezen naam
 OUTPUT_FILE = "sensor_data.csv"
+#revert back
 
 #test3
 threads_started = False

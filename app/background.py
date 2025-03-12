@@ -117,7 +117,7 @@ def read_oxygen():
     try:
         if oxygen_sensor:
             # Check if the sensor is connected by attempting a read
-            oxygen_value = oxygen_sensor.get_oxygen_data(10)
+            oxygen_value = oxygen_sensor.get_oxygen_data(1)
             if oxygen_value is not None:
                 return oxygen_value
             else:

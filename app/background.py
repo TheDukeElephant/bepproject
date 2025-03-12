@@ -187,7 +187,7 @@ def read_sensor_data():
             socketio.emit('update_dashboard', fallback_data, to=None)
 
         socketio.sleep(1)
-    
+
 def standby_oled():
 
     if oled:
@@ -307,10 +307,6 @@ def background_sensor_read():
         threading.Thread(target=read_sensor_data, daemon=True).start()
         threads_started = True
 
-@socketio.on('request_data')
-def send_buffered_data():
-    for data in data_buffer:
-        emit('update_dashboard', data)
 
 def get_co2_value_from_serial(ser):
     try:
@@ -341,6 +337,5 @@ def calculate_average_temperature(temperatures):
 
 @socketio.on('request_data')
 def send_buffered_data():
-    #dit is om de data te verzenden naar de socketio om te emitten naar het dashboard, (niks veranderen!)
     for data in data_buffer:
         emit('update_dashboard', data)

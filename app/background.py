@@ -116,7 +116,6 @@ def read_humidity():
 def read_oxygen():
     try:
         if oxygen_sensor:
-            # Check if the sensor is connected by attempting a read
             oxygen_value = oxygen_sensor.get_oxygen_data(1)
             if oxygen_value is not None:
                 return oxygen_value
@@ -127,6 +126,67 @@ def read_oxygen():
     except Exception as e:
         logging.error(f"Error reading oxygen from DFRobot Gravity Oxygen Sensor: {e}")
         return FALLBACK_OXYGEN  # Use fallback oxygen value
+
+def read_sensor_data():
+    while True:
+        try:
+            co2_value = Config.FALLBACK_CO2
+            o2_value = Config.FALLBACK_O2
+            temperatures = [read_temperature(sensor) for sensor in sensors]
+            humidity = read_humidity()
+
+            average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
+            if len(temperatures) >= 5:
+                fifth_temperature = temperatures[4]
+            else:
+                fifth_temperature = average_temperature
+
+            sensor_data = {
+                'timestamp': int(time.time()),
+                'co2': co2_value,
+                'o2': o2_value,
+                'temperatures': [round(temp, 2) for temp in temperatures] + [round(fifth_temperature, 2)],
+                'humidity': round(humidity, 2)
+            }
+
+            save_to_file(sensor_data)
+            data_buffer.append(sensor_data)
+            socketio.emit('update_dashboard', sensor_data, to=None)
+            logging.info("Emitting data successfully.")
+
+            display_temp = "Not connected" if sensor_data['temperatures'][4] > 950 else f"{sensor_data['temperatures'][4]} C"
+            display_humidity = "Not connected" if sensor_data['humidity'] > 100 else f"{sensor_data['humidity']} %"
+            display_o2 = "Not connected" if sensor_data['o2'] > 21.5 else f"{sensor_data['o2']} %"
+            display_co2 = "Not connected" if sensor_data['co2'] > 21 else f"{sensor_data['co2']} %"
+
+            if oled:
+                ip_address = get_ip_address()
+                wifi_ssid = get_wifi_ssid()
+                image = Image.new('1', (oled.width, oled.height))
+                draw = ImageDraw.Draw(image)
+                font = ImageFont.load_default()
+                draw.text((0, 0), f"SSID: {wifi_ssid}", font=font, fill=255)
+                draw.text((0, 10), f"IP: {ip_address}", font=font, fill=255)
+                draw.text((0, 20), f"Temp: {display_temp}", font=font, fill=255)
+                draw.text((0, 30), f"Humidity: {display_humidity}", font=font, fill=255)
+                draw.text((0, 40), f"O2: {display_o2}", font=font, fill=255)
+                draw.text((0, 50), f"CO2: {display_co2}", font=font, fill=255)
+                oled.image(image)
+                oled.show()
+
+        except Exception as e:
+            logging.error(f"Error reading sensors: {e}")
+            fallback_data = {
+                'timestamp': int(time.time()),
+                'co2': round(Config.FALLBACK_CO2 / 10000, 2),
+                'o2': Config.FALLBACK_O2,
+                'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors) + [round(FALLBACK_TEMPERATURE, 2)],
+                'humidity': round(FALLBACK_HUMIDITY, 2)
+            }
+            save_to_file(fallback_data)
+            socketio.emit('update_dashboard', fallback_data, to=None)
+
+        socketio.sleep(1)
     
 def standby_oled():
 
@@ -242,118 +302,15 @@ def co2_control_thread():
 
 
 def background_sensor_read():
-    #zet uart aan
-    ser = initialize_serial()  
-    last_temperature_control_time_temp = time.time()  
-    last_temperature_control_time_co2 = time.time()  
     global threads_started
-    
     if not threads_started:
-        # multithreading want is beter
-        threading.Thread(target=temperature_control_thread, daemon=True).start()
-        threading.Thread(target=co2_control_thread, daemon=True).start()
+        threading.Thread(target=read_sensor_data, daemon=True).start()
         threads_started = True
 
-    while True:
-        try:
-            # serial down? nog een keer
-            if ser is None or not ser.is_open:
-                logging.info("Reinitializing serial connection...")
-                ser = initialize_serial()
-
-            # fallbacks
-            co2_value = Config.FALLBACK_CO2
-            o2_value = Config.FALLBACK_O2  
-            temperatures = [read_temperature(sensor) for sensor in sensors]
-            humidity = read_humidity()
-            
-            # gemid temp
-            average_temperature = round((temperatures[2] + temperatures[3]) / 2, 2)
-            
-            # Add a fifth temperature value (e.g., average of all sensors or a specific sensor value)
-            if len(temperatures) >= 5:
-                fifth_temperature = temperatures[4]
-            else:
-                fifth_temperature = average_temperature  # Use average as fallback
-
-            # elke 10 sec controlleer de temperatuur	
-            current_time = time.time()
-            if current_time - last_temperature_control_time_temp >= CONTROL_INTERVAL_TEMP:
-                control_temperature(average_temperature)
-                last_temperature_control_time_temp = current_time
-
-            
-            # co2 lezen met serial port, doe voorzichtig want sensor werkt niet goed, niet te vaak aansturen.
-            if ser is not None:
-                co2_value = get_co2_value_from_serial(ser)
-
-            # start co2 function als interval is geweest
-            if current_time - last_temperature_control_time_co2 >= CONTROL_INTERVAL_CO2:
-                control_co2(co2_value)
-                last_temperature_control_time_co2 = current_time
-
-            # Read oxygen value from the Grove Oxygen Sensor
-            o2_value = read_oxygen()
-
-            # data voordat emit word in array
-            sensor_data = {
-                'timestamp': int(time.time()),
-                'co2': co2_value,
-                'o2': o2_value,
-                'temperatures': [round(temp, 2) for temp in temperatures] + [round(fifth_temperature, 2)],
-                'humidity': round(humidity, 2)
-            }
-
-            # data saving naar csv bestand
-            save_to_file(sensor_data)
-
-            # data buffer omdat wifi niet goed werkt
-            data_buffer.append(sensor_data)
-
-            # data moet naar alle clienten
-            socketio.emit('update_dashboard', sensor_data, to=None)
-            logging.info("Emitting data successfully.")
-
-            # als niet in range, zorg dat er not connected staat voor het gemak van de gebruiker
-            display_temp = "Not connected" if sensor_data['temperatures'][4] > 950 else f"{sensor_data['temperatures'][4]} C"
-            display_humidity = "Not connected" if sensor_data['humidity'] > 100 else f"{sensor_data['humidity']} %"
-            display_o2 = "Not connected" if sensor_data['o2'] > 21.5 else f"{sensor_data['o2']} %"
-            display_co2 = "Not connected" if sensor_data['co2'] > 21 else f"{sensor_data['co2']} %"
-
-            # oled scherm aanzetten met de goede library en alvast functies aansturen die ip adres een wifi ssid krijgen
-            if oled:
-                ip_address = get_ip_address()
-                wifi_ssid = get_wifi_ssid()
-                image = Image.new('1', (oled.width, oled.height))
-                draw = ImageDraw.Draw(image)
-                font = ImageFont.load_default()
-                
-                # oled schermpje weergave
-                draw.text((0, 0), f"SSID: {wifi_ssid}", font=font, fill=255)
-                draw.text((0, 10), f"IP: {ip_address}", font=font, fill=255)
-                draw.text((0, 20), f"Temp: {display_temp}", font=font, fill=255)
-                draw.text((0, 30), f"Humidity: {display_humidity}", font=font, fill=255)
-                draw.text((0, 40), f"O2: {display_o2}", font=font, fill=255)
-                draw.text((0, 50), f"CO2: {display_co2}", font=font, fill=255)
-                
-                oled.image(image)
-                oled.show()
-
-        except Exception as e:
-            logging.error(f"Error reading sensors: {e}")
-            # data moet altijd een fallback hebben voor als een sensor breekt.
-            fallback_data = {
-                'timestamp': int(time.time()),
-                'co2': round(Config.FALLBACK_CO2 / 10000, 2),
-                'o2': Config.FALLBACK_O2,
-                'temperatures': [round(FALLBACK_TEMPERATURE, 2)] * len(sensors) + [round(FALLBACK_TEMPERATURE, 2)],
-                'humidity': round(FALLBACK_HUMIDITY, 2)
-            }
-            save_to_file(fallback_data)  # fallback data moet ook gesaved worden
-            socketio.emit('update_dashboard', fallback_data, to=None)
-
-        # Emit data elke seconde want slapen 1 sec
-        socketio.sleep(1)
+@socketio.on('request_data')
+def send_buffered_data():
+    for data in data_buffer:
+        emit('update_dashboard', data)
 
 def get_co2_value_from_serial(ser):
     try:

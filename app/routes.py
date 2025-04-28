@@ -1,128 +1,92 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
-import RPi.GPIO as GPIO
-import atexit
 import logging
-from config import Config  # Updated import
+from config import Config
+from app.hardware import gpio_devices as hw_gpio # Import the new hardware module
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging (can be done once in run.py or app factory)
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define the Blueprint
 main_blueprint = Blueprint('main', __name__)
 
-# Initialize GPIO
-try:
-    GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
-    GPIO.setwarnings(False)
-except Exception as e:
-    logging.error(f"Error initializing GPIO: {e}")
-
-# Define device pin mappings
-device_pins = {
-    # Relays
-    'co2-solenoid': 4,         # GPIO 4: Relay for CO2 solenoid
-    'argon-solenoid': 17,      # GPIO 17: Relay for Argon solenoid
-    
-    # Renamed "humidifier" to "ito-heating"
-    'ito-heating': 27,         # GPIO 27: Reused for ITO heating
-    
-    # Sensors
-    'oxygen-sensor': 5,        # GPIO pin for the oxygen sensor
-    
-    # Motor driver connections for pump (kept)
-    'pump-ena': 20,            # GPIO 20: ENA for pump (PWM)
-    'pump-in1': 21,            # GPIO 21: IN1
-    'pump-in2': 18             # GPIO 18: IN2 (kept LOW for forward)
-}
-
-# Validate and set all pins as output and initialize to OFF
-for device, pin in device_pins.items():
-    try:
-        if not isinstance(pin, int):
-            raise ValueError(f"Pin value for '{device}' must be an integer, got {pin}")
-        logging.info(f"Setting up GPIO pin {pin} for {device}")
-        GPIO.setup(pin, GPIO.OUT)
-        if 'solenoid' in device or 'ito-heating' in device:
-            GPIO.output(pin, GPIO.HIGH)  # Ensure relays are OFF (HIGH is the off state for most relays)
-        else:
-            GPIO.output(pin, GPIO.LOW)  # Default LOW for motor drivers
-    except Exception as e:
-        logging.error(f"Error setting up GPIO for {device}: {e}")
-
-# Store PWM instances
-pwm_instances = {}
-pwm_pins = ['pump-ena']  # Only the pump uses PWM now
-pwm_instances['pump-ena'] = GPIO.PWM(device_pins['pump-ena'], 100)
-pwm_instances['pump-ena'].start(0)
-
-current_pwm_duty_cycle = {
-    'pump-ena': 0  # We'll set it to 75% only when pump is on
-}
-
-# Ensure GPIO cleanup on application exit
-def cleanup_gpio():
-    """Clean up all GPIO resources and stop PWM."""
-    for pwm in pwm_instances.values():
-        pwm.stop()
-    GPIO.cleanup()
-
-
-atexit.register(cleanup_gpio)
+# NOTE: GPIO initialization and cleanup are now handled within hw_gpio module
+# and should be called from run.py
 
 
 @main_blueprint.route('/toggle-device', methods=['POST'])
 @login_required
 def toggle_device():
-    """Toggle a relay or GPIO pin (pump, ito-heating, co2-solenoid, argon-solenoid)."""
+    """Toggle a device state using the hardware abstraction layer."""
     try:
         data = request.json
-        device = data.get('device')
+        device_name = data.get('device') # e.g., 'pump', 'co2-solenoid'
         state = data.get('state')  # 'on' or 'off'
 
-        if device not in device_pins and device not in ['pump']:
-            return {'error': f"Invalid device: {device}"}, 400
+        if state not in ['on', 'off']:
+             return {'error': "Invalid state. Must be 'on' or 'off'."}, 400
 
-        if device == 'pump':
-            # On => set pump to 75% speed
-            GPIO.output(device_pins['pump-in1'], GPIO.HIGH if state == 'on' else GPIO.LOW)
-            GPIO.output(device_pins['pump-in2'], GPIO.LOW)
-            pwm_instances['pump-ena'].ChangeDutyCycle(75 if state == 'on' else 0)
-            current_pwm_duty_cycle['pump-ena'] = 75 if state == 'on' else 0
-        elif device == 'ito-heating':
-            # Relay: LOW = ON, HIGH = OFF
-            pin = device_pins['ito-heating']
-            GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
+        # Use the hardware module function
+        success = hw_gpio.set_device_state(device_name, state)
+
+        if success:
+            logging.info(f"API: Device '{device_name}' toggled to {state}")
+            return {'status': 'success', 'device': device_name, 'state': state}
         else:
-            # Generic relay toggles
-            pin = device_pins[device]
-            GPIO.output(pin, GPIO.LOW if state == 'on' else GPIO.HIGH)
+            # The hardware module logs the specific error
+            logging.error(f"API: Failed to toggle device '{device_name}' to {state}")
+            # Check if the device name itself was invalid vs. a hardware issue
+            if device_name not in [hw_gpio.PUMP, hw_gpio.CO2_SOLENOID, hw_gpio.ARGON_SOLENOID, hw_gpio.ITO_HEATING]:
+                 return {'error': f"Invalid device name: {device_name}"}, 400
+            else:
+                 return {'error': f"Failed to set state for device '{device_name}'"}, 500
 
-        logging.info("Device %s toggled to %s", device, state)
-        return {'status': 'success', 'device': device, 'state': state}
     except Exception as e:
-        logging.error("Error toggling device: %s", e)
-        return {'error': str(e)}, 500
+        logging.error(f"API Error in /toggle-device: {e}", exc_info=True)
+        return {'error': 'An internal server error occurred'}, 500
 
 
 @main_blueprint.route('/set-device-speed', methods=['POST'])
 @login_required
 def set_device_speed():
-    """Set the speed for a PWM device."""
+    """Set the speed for the pump."""
     try:
         data = request.json
-        device = data.get('device')
-        speed = int(data.get('speed'))
+        # Assuming speed control is only for the pump now
+        device = data.get('device') # Keep for potential future use, but validate
+        speed_str = data.get('speed')
 
-        if device not in pwm_pins:
-            return {'error': f"Device {device} does not support speed control"}, 400
+        if device != hw_gpio.PUMP:
+             return {'error': f"Speed control only supported for device '{hw_gpio.PUMP}'"}, 400
 
-        pwm_instances[device].ChangeDutyCycle(speed)
-        current_pwm_duty_cycle[device] = speed  # Store current duty cycle in memory
+        if speed_str is None:
+             return {'error': "Missing 'speed' parameter"}, 400
 
-        return {'status': 'success', 'device': device, 'speed': speed}
+        try:
+             speed = int(speed_str)
+             if not (0 <= speed <= 100):
+                  raise ValueError("Speed must be between 0 and 100")
+        except ValueError as e:
+             return {'error': f"Invalid speed value: {e}"}, 400
+
+        # Use the hardware module function
+        success = hw_gpio.set_pump_speed(speed)
+
+        if success:
+            logging.info(f"API: Pump speed set to {speed}%")
+            return {'status': 'success', 'device': hw_gpio.PUMP, 'speed': speed}
+        else:
+            # Hardware module logs details
+            logging.error(f"API: Failed to set pump speed to {speed}%")
+            # Check if pump is off as a possible reason
+            if hw_gpio.get_device_state(hw_gpio.PUMP) == 'off' and speed > 0:
+                 return {'error': 'Cannot set speed while pump is off. Turn pump on first.'}, 409 # Conflict
+            else:
+                 return {'error': 'Failed to set pump speed'}, 500
+
     except Exception as e:
-        logging.error(f"Error setting device speed: {e}")
-        return {'error': str(e)}, 500
+        logging.error(f"API Error in /set-device-speed: {e}", exc_info=True)
+        return {'error': 'An internal server error occurred'}, 500
 
 
 @main_blueprint.route('/')
@@ -141,77 +105,51 @@ def dashboard():
 
 @main_blueprint.route('/setup', methods=['GET', 'POST'])
 @login_required
+@main_blueprint.route('/setup', methods=['GET']) # Only handle GET requests now
+@login_required
 def setup():
-    """Handle the setup page for configuring thresholds and device states."""
-    config_file_path = 'config.txt'
+    """Display the setup page with current thresholds from config and device states."""
 
-    # Relay states to synchronize UI with hardware
-    relay_states = {
-        'co2-solenoid': GPIO.input(device_pins['co2-solenoid']),
-        'argon-solenoid': GPIO.input(device_pins['argon-solenoid']),
-        'ito-heating': GPIO.input(device_pins['ito-heating'])
-    }
-
-    # Initialize device states and speeds
-    device_states = {
-        'pump': 'off'
-    }
-
-    if request.method == 'POST':
-        # Handle the setup form submission
-        co2_threshold = request.form.get('co2_threshold')
-        o2_threshold = request.form.get('o2_threshold')
-        temp_threshold = request.form.get('temp_threshold')
-        humidity_threshold = request.form.get('humidity_threshold')
-
-        # Save thresholds and device states to config file
-        try:
-            with open(config_file_path, 'w') as config_file:
-                config_file.write(f"co2_threshold={round(float(co2_threshold), 1)}\n")
-                config_file.write(f"o2_threshold={round(float(o2_threshold), 1)}\n")
-                config_file.write(f"temp_threshold={round(float(temp_threshold), 1)}\n")
-                config_file.write(f"humidity_threshold={round(float(humidity_threshold), 1)}\n")
-                config_file.write(f"pump_state={request.form.get('pump_state')}\n")
-            flash("Settings saved successfully!", "success")
-        except Exception as e:
-            flash(f"Error saving settings: {e}", "error")
-
-        # Redirect back to the dashboard after form submission
-        return redirect(url_for('main.dashboard'))
-
-    # For GET requests, load existing thresholds and device states from config.txt
-    thresholds = {
-        "co2_threshold": 0.0,
-        "o2_threshold": 0.0,
-        "temp_threshold": 0.0,
-        "humidity_threshold": 0.0
-    }
-
+    # Get current device states from the hardware layer
     try:
-        with open(config_file_path, 'r') as config_file:
-            for line in config_file:
-                key, value = line.strip().split('=')
-                if key in thresholds:
-                    thresholds[key] = round(float(value), 1)  # Round to 1 decimal place
-                elif key in device_states:
-                    device_states[key] = value if 'state' in key else int(value)
-    except FileNotFoundError:
-        flash("No configuration file found. Please set thresholds.", "info")
+        # Use the specific UI helper for relays if it interprets LOW/HIGH correctly
+        relay_states = hw_gpio.get_relay_states_for_ui()
+
+        # Get pump state and speed
+        pump_state = hw_gpio.get_device_state(hw_gpio.PUMP)
+        pump_speed = hw_gpio.get_pump_speed()
+
+        device_states = {
+            hw_gpio.PUMP: pump_state if pump_state is not None else 'unknown',
+            'pump_speed': pump_speed if pump_speed is not None else 'unknown'
+        }
+
     except Exception as e:
-        flash(f"Error reading configuration: {e}", "error")
+        # Handle potential errors during hardware communication at startup/refresh
+        logging.error(f"Error getting device states for setup page: {e}", exc_info=True)
+        flash("Error retrieving current device states.", "error")
+        # Provide default/error states to prevent template errors
+        relay_states = { hw_gpio.CO2_SOLENOID: 'error', hw_gpio.ARGON_SOLENOID: 'error', hw_gpio.ITO_HEATING: 'error' }
+        device_states = { hw_gpio.PUMP: 'error', 'pump_speed': 'error' }
 
-    # Update device states based on actual GPIO pin states
-    device_states['pump'] = 'on' if GPIO.input(device_pins['pump-in1']) == GPIO.HIGH else 'off'
 
-    # Read the actual PWM speeds
-    device_states['pump_speed'] = current_pwm_duty_cycle['pump-ena']
+    # Fetch thresholds from Config object
+    thresholds = {
+        "co2_threshold": Config.CO2_THRESHOLD,
+        "o2_threshold": Config.O2_THRESHOLD, # Note: O2 control not implemented yet
+        "temp_lower_bound": Config.TEMP_LOWER_BOUND,
+        "temp_upper_bound": Config.TEMP_UPPER_BOUND,
+        # Add other relevant config values if needed by the template
+    }
 
-    # Pass GPIO states and device states to the template
+    # Pass data to the template
+    # Ensure the template 'setup.html' uses the correct keys
+    # (e.g., hw_gpio.PUMP constant value or the string 'pump')
     return render_template(
         'setup.html',
         thresholds=thresholds,
         relay_states=relay_states,
         device_states=device_states,
-        GPIO_LOW=GPIO.LOW,
-        GPIO_HIGH=GPIO.HIGH
+        # Pass constants if template needs them (e.g., for data-device attributes)
+        DEVICE_NAMES=hw_gpio # Pass the whole module or specific constants
     )

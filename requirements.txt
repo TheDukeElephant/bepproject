@@ -4,7 +4,11 @@ Flask-Login==0.6.2
 werkzeug==2.3.3
 bcrypt==4.0.1
 eventlet==0.33.3
-DFRobot_Oxygen_Sensor
-Adafruit-Blinka
-adafruit-circuitpython-ssd1306
-adafruit-circuitpython-max31865
+RPi.GPIO>=0.7.1 # Often installed via apt, listing requirement
+Adafruit_Python_DHT>=1.4.0
+pyserial>=3.5
+Pillow>=9.0.0 # For display image handling
+Adafruit-Blinka>=8.0.0
+adafruit-circuitpython-ssd1306>=2.12.1
+adafruit-circuitpython-max31865>=2.2.6
+# Removed DFRobot_Oxygen_Sensor (using local app/DFRobot_Oxygen.py)

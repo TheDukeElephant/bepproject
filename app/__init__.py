@@ -2,13 +2,14 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_socketio import SocketIO
+from config import Config  # Import the Config class
 
 login_manager = LoginManager()
 socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = 'super_secret_key'
+    app.config.from_object(Config) # Load config from Config object
 
     # Initialize extensions
     login_manager.init_app(app)
